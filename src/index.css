@@ -1,0 +1,9 @@
+body {
+    background-color: #222222;
+    margin: 0;
+}
+
+@font-face {
+    font-family: "dos";
+    src: local("dos"), url("./assets/fonts/dos.ttf") format("truetype");
+}
