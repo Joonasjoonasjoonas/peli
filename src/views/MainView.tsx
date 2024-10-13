@@ -36,6 +36,7 @@ const MainView = () => {
         populate();
         const { worldMap } = GameStore;
         setCurrentWorldMap(worldMap);
+        updatePlayerFOV();
     }, []);
 
     // listen keypresses

@@ -69,6 +69,13 @@ export const generateCave = (map: any) => {
             map = doSimulationStep(map);
         }
 
+        // Add 6x6 area of floor tiles to upper left corner
+        for (let x = 1; x < 4; x++) {
+            for (let y = 1; y < 4; y++) {
+                map[getIndexFromXY(x, y)] = floor;
+            }
+        }
+
         return map;
     };
 
