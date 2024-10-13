@@ -19,13 +19,14 @@ const BlackSpace = styled.div`
 
 interface Props {
     worldMap: TileType[];
+    allVisible: boolean;
 }
 
-export const WorldMap: React.FC<Props> = ({ worldMap }) => {
+export const WorldMap: React.FC<Props> = ({ worldMap, allVisible }) => {
     return (
         <MapContainer>
             {worldMap.map((tile, index) => (
-                tile.visible ? (
+                allVisible || tile.visible ? (
                     <WorldTile tile={toJS(tile)} key={index} index={index} />
                 ) : (
                     <BlackSpace key={index} />

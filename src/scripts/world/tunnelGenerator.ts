@@ -16,9 +16,7 @@ const MIN_ROOM_HEIGHT = 3;
 const MAX_ROOM_HEIGHT = 5;
 const MIN_ROOMS = 4;
 const MAX_ROOMS = 10;
-const CORRIDOR_WIDTH = 1;
 const ROOM_SPACING = 1; // Minimum spacing between rooms
-const MAX_STRAIGHT_CORRIDOR = 5;
 
 export const generateTunnels = (map: TileType[]): TileType[] => {
     const rooms: Room[] = [];
@@ -65,7 +63,7 @@ export const generateTunnels = (map: TileType[]): TileType[] => {
         }
     }
 
-    // Connect rooms with corridors
+    // Connect rooms with simple corridors
     for (let i = 1; i < rooms.length; i++) {
         const start = rooms[i - 1];
         const end = rooms[i];
@@ -74,36 +72,16 @@ export const generateTunnels = (map: TileType[]): TileType[] => {
         const endX = end.x + Math.floor(end.width / 2);
         const endY = end.y + Math.floor(end.height / 2);
 
-        let direction: 'horizontal' | 'vertical' = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+        // Create horizontal corridor
+        while (x !== endX) {
+            map[getIndexFromXY(x, y)] = floor;
+            x += x < endX ? 1 : -1;
+        }
 
-        while (x !== endX || y !== endY) {
-            const straightLength = Math.floor(Math.random() * MAX_STRAIGHT_CORRIDOR) + 1;
-            
-            for (let j = 0; j < straightLength; j++) {
-                if (direction === 'horizontal') {
-                    if (x < endX) x++;
-                    else if (x > endX) x--;
-                    else break;
-                } else {
-                    if (y < endY) y++;
-                    else if (y > endY) y--;
-                    else break;
-                }
-
-                for (let dx = -Math.floor(CORRIDOR_WIDTH / 2); dx <= Math.floor(CORRIDOR_WIDTH / 2); dx++) {
-                    for (let dy = -Math.floor(CORRIDOR_WIDTH / 2); dy <= Math.floor(CORRIDOR_WIDTH / 2); dy++) {
-                        const index = getIndexFromXY(x + dx, y + dy);
-                        if (index >= 0 && index < map.length) {
-                            map[index] = floor;
-                        }
-                    }
-                }
-
-                if (x === endX && y === endY) break;
-            }
-
-            // Change direction after each straight segment
-            direction = direction === 'horizontal' ? 'vertical' : 'horizontal';
+        // Create vertical corridor
+        while (y !== endY) {
+            map[getIndexFromXY(x, y)] = floor;
+            y += y < endY ? 1 : -1;
         }
     }
 

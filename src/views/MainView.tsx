@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { EventWindow } from "../components/EventWindow";
 import { WorldMap } from "../components/WorldMap";
@@ -29,9 +29,7 @@ const MainView = () => {
 
     const { playerIsCaught } = PlayerStore;
 
-    // create world map on first render
-
-    useEffect(() => {
+    const generateNewWorld = useCallback(() => {
         createWorldMap();
         populate();
         const { worldMap } = GameStore;
@@ -39,8 +37,12 @@ const MainView = () => {
         updatePlayerFOV();
     }, []);
 
-    // listen keypresses
+    // create world map on first render
+    useEffect(() => {
+        generateNewWorld();
+    }, [generateNewWorld]);
 
+    // listen keypresses
     useEffect(() => {
         const { addCompleteLogMessage } = GameStore;
         const keyPress = (event: KeyboardEvent) => {
@@ -57,17 +59,20 @@ const MainView = () => {
                 checkForRandomEvent();
                 addCompleteLogMessage();
                 tryMoveActor();
+            } else if (lowercaseKey === "p") {
+                generateNewWorld();
+                setTurn(0);
             }
         };
 
         window.addEventListener("keydown", keyPress);
 
         return () => window.removeEventListener("keydown", keyPress);
-    }, [turn, playerIsCaught]);
+    }, [turn, playerIsCaught, generateNewWorld]);
 
     return (
         <MainContainer>
-            <WorldMap worldMap={currentWorldMap} />
+            <WorldMap worldMap={currentWorldMap} allVisible={false} />
             <UIContainer>
                 <StatWindow turn={turn} />
                 <EventWindow />
