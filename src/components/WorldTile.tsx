@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { TileType } from "../game/world/map";
+import { TileType } from "../scripts/world/map";
 import ActorStore, { Actor } from "../store/ActorStore";
 import PlayerStore from "../store/PlayerStore";
 import { getDistance, getIndexFromXY } from "../utils/utils";

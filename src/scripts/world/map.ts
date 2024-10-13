@@ -2,6 +2,7 @@ import GameStore from "../../store/GameStore";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 import { getIndexFromXY, randomNumber } from "../../utils/utils";
 import { generateCave } from "./caveGenerator";
+import { generateTunnels } from "./tunnelGenerator";
 
 export interface TileType {
     type: string;
@@ -41,9 +42,12 @@ const createPathfindingMap = (map: TileType[]) => {
 export const createWorldMap = () => {
     const { addWorldMap } = GameStore;
     const map = Array.from({ length: WORLD_HEIGHT * WORLD_WIDTH }, () => {
+
+        /*
         const rnd = randomNumber(1, 5);
         if (rnd <= 3) return floor;
-        else return wall;
+        else return wall; */
+        return wall;
     });
 
     // make solid walls
@@ -63,8 +67,8 @@ export const createWorldMap = () => {
         map[getIndexFromXY(WORLD_WIDTH - 1, y)] = wall;
     }
 
-    const caveMap = generateCave(map);
+    const tunnelMap = generateTunnels(map);
 
-    addWorldMap(caveMap);
-    createPathfindingMap(caveMap);
+    addWorldMap(tunnelMap);
+    createPathfindingMap(tunnelMap);
 };

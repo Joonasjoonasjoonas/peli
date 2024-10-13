@@ -1,5 +1,5 @@
 import GameStore from "../store/GameStore";
-import { WORLD_WIDTH } from "../game/game";
+import { WORLD_WIDTH } from "../scripts/game";
 
 export const randomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min) + min);
