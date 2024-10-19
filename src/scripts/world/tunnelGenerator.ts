@@ -149,22 +149,34 @@ function findClosestWallPoint(room: Room, otherRoom: Room): Point {
 function createCorridor(map: TileType[], start: Point, end: Point): void {
     let x = start.x;
     let y = start.y;
+    let straightCount = 0;
+    let isHorizontal = Math.abs(end.x - start.x) > Math.abs(end.y - start.y);
 
     while (x !== end.x || y !== end.y) {
         map[getIndexFromXY(x, y)] = floor;
 
-        // Randomly decide whether to move horizontally or vertically
-        if (Math.random() < 0.5) {
+        const remainingDistance = Math.abs(end.x - x) + Math.abs(end.y - y);
+
+        if (remainingDistance > 4 && straightCount >= 2 && Math.random() < 0.5) {
+            isHorizontal = !isHorizontal;
+            straightCount = 0;
+        }
+
+        if (isHorizontal) {
             if (x !== end.x) {
                 x += x < end.x ? 1 : -1;
-            } else if (y !== end.y) {
-                y += y < end.y ? 1 : -1;
+                straightCount++;
+            } else {
+                isHorizontal = false;
+                straightCount = 0;
             }
         } else {
             if (y !== end.y) {
                 y += y < end.y ? 1 : -1;
-            } else if (x !== end.x) {
-                x += x < end.x ? 1 : -1;
+                straightCount++;
+            } else {
+                isHorizontal = true;
+                straightCount = 0;
             }
         }
     }
