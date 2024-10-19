@@ -10,17 +10,13 @@ const Tile = styled.div<{ tile: TileType; distanceFromPlayer: number }>`
     justify-content: center;
     align-items: center;
     background-color: ${(p) =>
-        p.tile.type === "floor"
+        p.distanceFromPlayer > 5
             ? "black"
-            : p.distanceFromPlayer > 5
-            ? "darkgray"
-            : "gray"};
+            : p.tile.backgroundColor};
     color: ${(p) =>
-        p.tile.type === "floor"
-            ? p.distanceFromPlayer > 5
-                ? "darkgray"
-                : "gray"
-            : "gray"};
+        p.distanceFromPlayer > 5
+            ? "#282828" // very dark gray
+            : p.tile.color};
     width: 100%;
     z-index: 1;
 `;
@@ -77,13 +73,11 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
             renderActor = actor;
     });
 
-    const terrainCharacter = tile.type === "floor" ? "." : tile.type === "wall" ? " " : "";
-
     return (
         <>
             <Tile tile={tile} distanceFromPlayer={distanceFromPlayer}>
                 {!renderPlayer && !renderActor.id && (
-                    <div>{terrainCharacter}</div>
+                    <div>{tile.ascii}</div>
                 )}
                 {renderPlayer && <Player>@</Player>}
                 {!!renderActor.id && (
