@@ -57,17 +57,21 @@ const MainView = () => {
                 return;
             }
             const key = event.key;
-            if (
-                movementKeys.includes(key)
-            ) {
-                
+            if (movementKeys.includes(key)) {
                 handleKeyPress(key);
                 setTurn(turn + 1);
                 checkForRandomEvent();
                 addCompleteLogMessage();
                 tryMoveActor();
             } else if (key.toLowerCase() === "p") {
+                setCurrentWorldMap(prevMap => 
+                    prevMap.map(tile => ({ ...tile, visible: true }))
+                );
+            } else if (key.toLowerCase() === "m") {
                 generateNewWorld();
+                setCurrentWorldMap(prevMap => 
+                    prevMap.map(tile => ({ ...tile, visible: true }))
+                );
                 setTurn(0);
             } else {
                 setTurn(turn + 1);
@@ -84,7 +88,7 @@ const MainView = () => {
 
     return (
         <MainContainer>
-            <WorldMap worldMap={currentWorldMap} allVisible={false} />
+            <WorldMap worldMap={currentWorldMap} />
             <UIContainer>
                 <StatPanel turn={turn} />
                 <EventPanel />
