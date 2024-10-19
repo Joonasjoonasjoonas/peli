@@ -3,6 +3,7 @@ import GameStore from "../../store/GameStore";
 import { getAdjacentTile } from "../../utils/utils";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 import { toJS } from "mobx";
+import { updatePlayerFOV } from "./fov";
 
 const checkIfCanMove = (direction: string) => {
     const { addLogMessage } = GameStore;
@@ -71,6 +72,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x, playerCoords.y - 1);
                 addLogMessage("You move north.");
+                updatePlayerFOV();
             }
             break;
 
@@ -78,6 +80,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x - 1, playerCoords.y);
                 addLogMessage("You move west.");
+                updatePlayerFOV();
             }
             break;
 
@@ -85,6 +88,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x, playerCoords.y + 1);
                 addLogMessage("You move south.");
+                updatePlayerFOV();
             }
             break;
 
@@ -92,6 +96,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x + 1, playerCoords.y);
                 addLogMessage("You move east.");
+                updatePlayerFOV();
             }
             break;
 
@@ -99,6 +104,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x - 1, playerCoords.y - 1);
                 addLogMessage("You move north-west.");
+                updatePlayerFOV();
             }
             break;
 
@@ -106,6 +112,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x - 1, playerCoords.y + 1);
                 addLogMessage("You move south-west.");
+                updatePlayerFOV();
             }
             break;
 
@@ -113,6 +120,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x + 1, playerCoords.y - 1);
                 addLogMessage("You move north-east.");
+                updatePlayerFOV();
             }
             break;
 
@@ -120,6 +128,7 @@ export const tryMovePlayer = (direction: string) => {
             if (checkIfCanMove(direction)) {
                 updatePlayerCoords(playerCoords.x + 1, playerCoords.y + 1);
                 addLogMessage("You move south-east.");
+                updatePlayerFOV();
             }
             break;
 

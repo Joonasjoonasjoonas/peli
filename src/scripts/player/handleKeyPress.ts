@@ -1,5 +1,9 @@
 import { tryMovePlayer } from "./movement";
 
+export const movementKeys = ["w", "a", "x", "d", "q", "z", "c", "e", 
+    "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight",
+    "7", "4", "2", "6", "8", "1", "3", "9"];
+
 export const handleKeyPress = (keyPressed: string) => {
     // nw = northwest, n = north, ne = northeast ....
 

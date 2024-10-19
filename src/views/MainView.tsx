@@ -13,7 +13,7 @@ import { populate } from "../scripts/actors/populate";
 import ModalWindow from "../components/ModalWindow";
 import PlayerStore from "../store/PlayerStore";
 import { updatePlayerFOV } from "../scripts/player/fov";
-import { movementKeys } from "../scripts/player/movementKeys";
+import { movementKeys } from "../scripts/player/handleKeyPress";
 
 const MainContainer = styled.div`
     display: flex;
@@ -55,7 +55,7 @@ const MainView = () => {
             if (
                 movementKeys.includes(key)
             ) {
-                updatePlayerFOV();
+                
                 handleKeyPress(key);
                 setTurn(turn + 1);
                 checkForRandomEvent();
@@ -64,6 +64,11 @@ const MainView = () => {
             } else if (key.toLowerCase() === "p") {
                 generateNewWorld();
                 setTurn(0);
+            } else {
+                setTurn(turn + 1);
+                checkForRandomEvent();
+                addCompleteLogMessage();
+                tryMoveActor();
             }
         };
 
