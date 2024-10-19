@@ -3,11 +3,12 @@ import React from "react";
 import styled from "styled-components";
 import { TileType } from "../scripts/world/tileTypes";
 import WorldTile from "./WorldTile";
+import { WORLD_HEIGHT, WORLD_WIDTH } from "../scripts/game";
 
 const MapContainer = styled.div`
     display: grid;
-    grid-template-columns: repeat(94, 15px);
-    grid-template-rows: repeat(20, 25px);
+    grid-template-columns: repeat(${WORLD_WIDTH}, 15px);
+    grid-template-rows: repeat(${WORLD_HEIGHT}, 25px);
     margin: 10px;
 `;
 
@@ -19,7 +20,6 @@ const BlackSpace = styled.div`
 
 interface Props {
     worldMap: TileType[];
-  
 }
 
 export const WorldMap: React.FC<Props> = ({ worldMap }) => {

@@ -57,11 +57,6 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
         charColor: "",
     };
 
-    const tileCoords = {
-        x: index % 94,
-        y: Math.floor(index / 94)
-    };
-
     actors.forEach((actor) => {
         if (
             index === getIndexFromXY(actor.xCoord, actor.yCoord) &&

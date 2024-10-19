@@ -9,6 +9,11 @@ interface Room {
     height: number;
 }
 
+interface Point {
+    x: number;
+    y: number;
+}
+
 // Configuration variables
 const MIN_ROOM_WIDTH = 5;
 const MAX_ROOM_WIDTH = 9;
@@ -16,7 +21,7 @@ const MIN_ROOM_HEIGHT = 5;
 const MAX_ROOM_HEIGHT = 9;
 const MIN_ROOMS = 4;
 const MAX_ROOMS = 10;
-const ROOM_SPACING = 3; // Minimum spacing between rooms
+const ROOM_SPACING = 1; // Minimum spacing between rooms
 
 export const generateTunnels = (map: TileType[]): TileType[] => {
     const rooms: Room[] = [];
@@ -63,25 +68,35 @@ export const generateTunnels = (map: TileType[]): TileType[] => {
         }
     }
 
-    // Connect rooms with simple corridors
-    for (let i = 1; i < rooms.length; i++) {
-        const start = rooms[i - 1];
-        const end = rooms[i];
-        let x = start.x + Math.floor(start.width / 2);
-        let y = start.y + Math.floor(start.height / 2);
-        const endX = end.x + Math.floor(end.width / 2);
-        const endY = end.y + Math.floor(end.height / 2);
+    // Connect rooms with corridors
+    const connectedRooms: Set<number> = new Set([0]);  // Start with the first room
+    const remainingRooms: number[] = Array.from({ length: rooms.length - 1 }, (_, i) => i + 1);
 
-        // Create horizontal corridor
-        while (x !== endX) {
-            map[getIndexFromXY(x, y)] = floor;
-            x += x < endX ? 1 : -1;
+    while (remainingRooms.length > 0) {
+        let closestPair: [number, number] | null = null;
+        let shortestDistance = Infinity;
+
+        for (const connectedRoom of Array.from(connectedRooms)) {
+            for (const remainingRoom of remainingRooms) {
+                const distance = getDistance(rooms[connectedRoom], rooms[remainingRoom]);
+                if (distance < shortestDistance) {
+                    shortestDistance = distance;
+                    closestPair = [connectedRoom, remainingRoom];
+                }
+            }
         }
 
-        // Create vertical corridor
-        while (y !== endY) {
-            map[getIndexFromXY(x, y)] = floor;
-            y += y < endY ? 1 : -1;
+        if (closestPair) {
+            const [connectedRoom, remainingRoom] = closestPair;
+            const startPoint = findClosestWallPoint(rooms[connectedRoom], rooms[remainingRoom]);
+            const endPoint = findClosestWallPoint(rooms[remainingRoom], rooms[connectedRoom]);
+            createCorridor(map, startPoint, endPoint);
+
+            connectedRooms.add(remainingRoom);
+            remainingRooms.splice(remainingRooms.indexOf(remainingRoom), 1);
+        } else {
+            console.warn("Unable to connect all rooms.");
+            break;
         }
     }
 
@@ -95,4 +110,63 @@ function isOverlapping(a: Room, b: Room, spacing: number): boolean {
         a.y < b.y + b.height + spacing &&
         a.y + a.height + spacing > b.y
     );
+}
+
+function getDistance(a: Room, b: Room): number {
+    const centerA = { x: a.x + a.width / 2, y: a.y + a.height / 2 };
+    const centerB = { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+    return Math.sqrt(Math.pow(centerA.x - centerB.x, 2) + Math.pow(centerA.y - centerB.y, 2));
+}
+
+function findClosestWallPoint(room: Room, otherRoom: Room): Point {
+    const centerOther = { x: otherRoom.x + otherRoom.width / 2, y: otherRoom.y + otherRoom.height / 2 };
+    let closestPoint: Point = { x: room.x, y: room.y };
+    let shortestDistance = Infinity;
+
+    // Check all points on the walls of the room, excluding corners and adjacent tiles
+    for (let x = room.x + 1; x < room.x + room.width - 1; x++) {
+        for (let y of [room.y, room.y + room.height - 1]) {
+            const distance = Math.sqrt(Math.pow(x - centerOther.x, 2) + Math.pow(y - centerOther.y, 2));
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                closestPoint = { x, y };
+            }
+        }
+    }
+    for (let y = room.y + 1; y < room.y + room.height - 1; y++) {
+        for (let x of [room.x, room.x + room.width - 1]) {
+            const distance = Math.sqrt(Math.pow(x - centerOther.x, 2) + Math.pow(y - centerOther.y, 2));
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                closestPoint = { x, y };
+            }
+        }
+    }
+
+    return closestPoint;
+}
+
+function createCorridor(map: TileType[], start: Point, end: Point): void {
+    let x = start.x;
+    let y = start.y;
+
+    while (x !== end.x || y !== end.y) {
+        map[getIndexFromXY(x, y)] = floor;
+
+        // Randomly decide whether to move horizontally or vertically
+        if (Math.random() < 0.5) {
+            if (x !== end.x) {
+                x += x < end.x ? 1 : -1;
+            } else if (y !== end.y) {
+                y += y < end.y ? 1 : -1;
+            }
+        } else {
+            if (y !== end.y) {
+                y += y < end.y ? 1 : -1;
+            } else if (x !== end.x) {
+                x += x < end.x ? 1 : -1;
+            }
+        }
+    }
+    map[getIndexFromXY(end.x, end.y)] = floor;
 }
