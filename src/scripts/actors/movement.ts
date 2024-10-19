@@ -10,7 +10,7 @@ const PF = Pathfinding;
 export const tryMoveActor = () => {
     const { playerCoords } = PlayerStore;
     const { updateActorCoords, actors } = ActorStore;
-    const { pathfindingGrid } = GameStore;
+    const { pathfindingGrid, addLogMessage } = GameStore;
 
     // if (actorTick > 1) {
     //     updateActorTick();
@@ -41,6 +41,10 @@ export const tryMoveActor = () => {
             );
 
             if (path[1] !== undefined) {
+                if (path[1][0] === playerCoords.x && path[1][1] === playerCoords.y) {
+                    addLogMessage(`${actor.race} bumps into you.`);
+                    return;
+                }
                 updateActorCoords(actor.id, path[1][0], path[1][1]);
             } else {
                 return;
