@@ -8,7 +8,7 @@ const MapContainer = styled.div`
     display: grid;
     grid-template-columns: repeat(94, 15px);
     grid-template-rows: repeat(20, 25px);
-    margin: 1%;
+    margin: 10px;
 `;
 
 const BlackSpace = styled.div`

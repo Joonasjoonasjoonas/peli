@@ -6,16 +6,14 @@ const StatPanelContainer = styled.div`
     display: flex;
     flex-direction: column;
     text-align: left;
-
     color: white;
     background-color: black;
-
     height: 100px;
-
-    margin-bottom: 1%;
-    margin-left: 1%;
-    margin-right: 1%;
-    padding: 1%;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 10px;
+    width: calc(94 * 15px); // Match the width of the MapContainer
 `;
 
 interface Props {
