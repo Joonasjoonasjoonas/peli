@@ -26,7 +26,7 @@ const LogMessage = styled.div<{ messageIndex: number }>`
     color: ${(p) => (p.messageIndex === 0 ? "white" : "DarkGrey")};
 `;
 
-export const EventWindow = () => {
+export const EventPanel = () => {
     const { completeLogMessages } = GameStore;
 
     return (

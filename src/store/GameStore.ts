@@ -29,11 +29,17 @@ class GameStore {
         this.pathfindingGrid = grid;
     };
 
-    setTileVisible = (index: number) => {
+    setTileVisible = (index: number, visible: boolean) => {
         if (index >= 0 && index < this.worldMap.length) {
-            this.worldMap[index].visible = true;
+            this.worldMap[index].visible = visible;
         }
     };
+
+    setTileExplored = (index: number, explored: boolean) => {
+        if (index >= 0 && index < this.worldMap.length) {
+            this.worldMap[index].explored = explored;
+        }
+    };  
 }
 
 export default new GameStore();

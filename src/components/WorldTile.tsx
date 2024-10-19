@@ -3,20 +3,24 @@ import styled from "styled-components";
 import { TileType } from "../scripts/world/tileTypes";
 import ActorStore, { Actor } from "../store/ActorStore";
 import PlayerStore from "../store/PlayerStore";
-import { getDistance, getIndexFromXY } from "../utils/utils";
+import { getIndexFromXY } from "../utils/utils";
 
-const Tile = styled.div<{ tile: TileType; distanceFromPlayer: number }>`
+const Tile = styled.div<{ tile: TileType; visible: boolean; explored: boolean }>`
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: ${(p) =>
-        p.distanceFromPlayer > 5
+        p.visible
+            ? p.tile.backgroundColor
+            : p.explored
             ? "black"
-            : p.tile.backgroundColor};
+            : "transparent"};
     color: ${(p) =>
-        p.distanceFromPlayer > 5
+        p.visible
+            ? p.tile.color
+            : p.explored
             ? "#282828" // very dark gray
-            : p.tile.color};
+            : "transparent"};
     width: 100%;
     z-index: 1;
 `;
@@ -58,24 +62,17 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
         y: Math.floor(index / 94)
     };
 
-    const distanceFromPlayer = getDistance(
-        playerCoords.x,
-        playerCoords.y,
-        tileCoords.x,
-        tileCoords.y
-    );
-
     actors.forEach((actor) => {
         if (
             index === getIndexFromXY(actor.xCoord, actor.yCoord) &&
-            distanceFromPlayer < 10
+            tile.visible
         )
             renderActor = actor;
     });
 
     return (
         <>
-            <Tile tile={tile} distanceFromPlayer={distanceFromPlayer}>
+            <Tile tile={tile} visible={tile.visible} explored={tile.explored}>
                 {!renderPlayer && !renderActor.id && (
                     <div>{tile.ascii}</div>
                 )}

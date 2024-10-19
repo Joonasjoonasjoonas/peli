@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const StatWindowContainer = styled.div`
+const StatPanelContainer = styled.div`
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -22,6 +22,6 @@ interface Props {
     turn: number;
 }
 
-export const StatWindow: React.FC<Props> = ({ turn }) => {
-    return <StatWindowContainer>Turn: {turn}</StatWindowContainer>;
+export const StatPanel: React.FC<Props> = ({ turn }) => {
+    return <StatPanelContainer>Turn: {turn}</StatPanelContainer>;
 };

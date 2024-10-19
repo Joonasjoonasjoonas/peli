@@ -4,8 +4,15 @@ import { getIndexFromXY } from "../../utils/utils";
 
 export const updatePlayerFOV = () => {
     const { playerCoords } = PlayerStore;
-    const { worldMap, setTileVisible } = GameStore;
+    const { worldMap, setTileVisible, setTileExplored } = GameStore;
     const radius = 6;
+
+    // Set all visible tiles to not visible
+    worldMap.forEach((tile, index) => {
+        if (tile.visible) {
+            setTileVisible(index, false);
+        }
+    });
 
     for (let angle = 0; angle < 360; angle += 1) {
         let x = playerCoords.x;
@@ -24,9 +31,11 @@ export const updatePlayerFOV = () => {
             const tile = worldMap[index];
             
             if (tile.type === "floor") {
-                setTileVisible(index);
+                setTileVisible(index, true);
+                setTileExplored(index, true);
             } else if (tile.type === "wall") {
-                setTileVisible(index);
+                setTileVisible(index, true);
+                setTileExplored(index, true);
                 break;
             }
         }

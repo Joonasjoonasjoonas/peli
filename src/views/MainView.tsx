@@ -1,13 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
-import { EventWindow } from "../components/EventWindow";
+import { EventPanel } from "../components/EventPanel";
 import { WorldMap } from "../components/WorldMap";
 import GameStore from "../store/GameStore";
 import { tryMoveActor } from "../scripts/actors/movement";
 import { createWorldMap} from "../scripts/world/mapCreator";
 import { TileType } from "../scripts/world/tileTypes";
 import { checkForRandomEvent } from "../scripts/world/randomEvents";
-import { StatWindow } from "../components/StatWindow";
+import { StatPanel } from "../components/StatPanel";
 import { handleKeyPress } from "../scripts/player/handleKeyPress";
 import { populate } from "../scripts/actors/populate";
 import ModalWindow from "../components/ModalWindow";
@@ -81,8 +81,8 @@ const MainView = () => {
         <MainContainer>
             <WorldMap worldMap={currentWorldMap} allVisible={false} />
             <UIContainer>
-                <StatWindow turn={turn} />
-                <EventWindow />
+                <StatPanel turn={turn} />
+                <EventPanel />
             </UIContainer>
             <ModalWindow
                 open={modalOpen}

@@ -26,7 +26,7 @@ export const WorldMap: React.FC<Props> = ({ worldMap, allVisible }) => {
     return (
         <MapContainer>
             {worldMap.map((tile, index) => (
-                allVisible || tile.visible ? (
+                allVisible || tile.visible || tile.explored ? (
                     <WorldTile tile={toJS(tile)} key={index} index={index} />
                 ) : (
                     <BlackSpace key={index} />
