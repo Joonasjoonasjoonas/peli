@@ -4,7 +4,8 @@ import { EventWindow } from "../components/EventWindow";
 import { WorldMap } from "../components/WorldMap";
 import GameStore from "../store/GameStore";
 import { tryMoveActor } from "../scripts/actors/movement";
-import { createWorldMap, TileType } from "../scripts/world/map";
+import { createWorldMap} from "../scripts/world/map";
+import { TileType } from "../scripts/world/tileTypes";
 import { checkForRandomEvent } from "../scripts/world/randomEvents";
 import { StatWindow } from "../components/StatWindow";
 import { handleKeyPress } from "../scripts/player/handleKeyPress";
@@ -30,7 +31,7 @@ const MainView = () => {
     const { playerIsCaught } = PlayerStore;
 
     const generateNewWorld = useCallback(() => {
-        createWorldMap();
+        createWorldMap('tunnels');
         populate();
         const { worldMap } = GameStore;
         setCurrentWorldMap(worldMap);

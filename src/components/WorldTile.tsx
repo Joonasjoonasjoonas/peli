@@ -1,28 +1,27 @@
 import React from "react";
 import styled from "styled-components";
-import { TileType } from "../scripts/world/map";
+import { TileType } from "../scripts/world/tileTypes";
 import ActorStore, { Actor } from "../store/ActorStore";
 import PlayerStore from "../store/PlayerStore";
 import { getDistance, getIndexFromXY } from "../utils/utils";
 
-const Tile = styled.div<{ tile: TileType }>`
+const Tile = styled.div<{ tile: TileType; distanceFromPlayer: number }>`
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: ${(p) =>
         p.tile.type === "floor"
             ? "black"
-            : p.tile.type === "wall"
-            ? "grey"
-            : "grey"};
+            : p.distanceFromPlayer > 5
+            ? "darkgray"
+            : "gray"};
     color: ${(p) =>
         p.tile.type === "floor"
-            ? "grey"
-            : p.tile.type === "wall"
-            ? "grey"
-            : "grey"};
+            ? p.distanceFromPlayer > 5
+                ? "darkgray"
+                : "gray"
+            : "gray"};
     width: 100%;
-
     z-index: 1;
 `;
 
@@ -58,24 +57,31 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
         charColor: "",
     };
 
+    const tileCoords = {
+        x: index % 94,
+        y: Math.floor(index / 94)
+    };
+
+    const distanceFromPlayer = getDistance(
+        playerCoords.x,
+        playerCoords.y,
+        tileCoords.x,
+        tileCoords.y
+    );
+
     actors.forEach((actor) => {
         if (
             index === getIndexFromXY(actor.xCoord, actor.yCoord) &&
-            getDistance(
-                playerCoords.x,
-                playerCoords.y,
-                actor.xCoord,
-                actor.yCoord
-            ) < 10
+            distanceFromPlayer < 10
         )
             renderActor = actor;
     });
 
-    const terrainCharacter = tile.type === "floor" ? "." : tile.type === "wall";
+    const terrainCharacter = tile.type === "floor" ? "." : tile.type === "wall" ? " " : "";
 
     return (
         <>
-            <Tile tile={tile}>
+            <Tile tile={tile} distanceFromPlayer={distanceFromPlayer}>
                 {!renderPlayer && !renderActor.id && (
                     <div>{terrainCharacter}</div>
                 )}

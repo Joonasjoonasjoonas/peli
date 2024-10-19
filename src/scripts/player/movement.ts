@@ -2,7 +2,6 @@ import PlayerStore from "../../store/PlayerStore";
 import GameStore from "../../store/GameStore";
 import { getAdjacentTile } from "../../utils/utils";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
-import { wall } from "../world/map";
 import { toJS } from "mobx";
 
 const checkIfCanMove = (direction: string) => {

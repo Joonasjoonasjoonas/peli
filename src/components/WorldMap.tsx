@@ -1,7 +1,7 @@
 import { toJS } from "mobx";
 import React from "react";
 import styled from "styled-components";
-import { TileType } from "../scripts/world/map";
+import { TileType } from "../scripts/world/tileTypes";
 import WorldTile from "./WorldTile";
 
 const MapContainer = styled.div`

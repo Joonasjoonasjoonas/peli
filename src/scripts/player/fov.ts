@@ -1,7 +1,6 @@
 import PlayerStore from "../../store/PlayerStore";
 import GameStore from "../../store/GameStore";
 import { getIndexFromXY } from "../../utils/utils";
-import { TileType } from "../../scripts/world/map";
 
 export const updatePlayerFOV = () => {
     const { playerCoords } = PlayerStore;

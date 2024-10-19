@@ -3,23 +3,7 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 import { getIndexFromXY, randomNumber } from "../../utils/utils";
 import { generateCave } from "./caveGenerator";
 import { generateTunnels } from "./tunnelGenerator";
-
-export interface TileType {
-    type: string;
-    blocking: boolean;
-    visible: boolean;
-}
-
-export const floor: TileType = {
-    type: "floor",
-    blocking: false,
-    visible: false,
-};
-export const wall: TileType = {
-    type: "wall",
-    blocking: true,
-    visible: false,
-};
+import { TileType, wall, floor } from "./tileTypes";
 
 const createPathfindingMap = (map: TileType[]) => {
     const { addPathfindingGrid } = GameStore;
@@ -39,36 +23,48 @@ const createPathfindingMap = (map: TileType[]) => {
     addPathfindingGrid(pathfindingMap);
 };
 
-export const createWorldMap = () => {
+export const createWorldMap = (mapType: 'forest' | 'cave' | 'tunnels') => {
     const { addWorldMap } = GameStore;
-    const map = Array.from({ length: WORLD_HEIGHT * WORLD_WIDTH }, () => {
+    let map: TileType[];
 
-        /*
-        const rnd = randomNumber(1, 5);
-        if (rnd <= 3) return floor;
-        else return wall; */
-        return wall;
-    });
-
-    // make solid walls
-
-    for (let x = 0; x < WORLD_WIDTH; x++) {
-        map[getIndexFromXY(x, 0)] = wall;
+    if (mapType === 'cave') {
+        map = Array.from({ length: WORLD_HEIGHT * WORLD_WIDTH }, () => {
+            const rnd = randomNumber(1, 5);
+            if (rnd <= 3) return floor;
+            else return wall;
+        });
+    } else {
+        map = Array.from({ length: WORLD_HEIGHT * WORLD_WIDTH }, () => wall);
     }
 
+    // make solid walls
     for (let x = 0; x < WORLD_WIDTH; x++) {
+        map[getIndexFromXY(x, 0)] = wall;
         map[getIndexFromXY(x, WORLD_HEIGHT - 1)] = wall;
     }
 
     for (let y = 0; y < WORLD_HEIGHT; y++) {
         map[getIndexFromXY(0, y)] = wall;
-    }
-    for (let y = 0; y < WORLD_HEIGHT; y++) {
         map[getIndexFromXY(WORLD_WIDTH - 1, y)] = wall;
     }
 
-    const tunnelMap = generateTunnels(map);
+    let finalMap: TileType[];
 
-    addWorldMap(tunnelMap);
-    createPathfindingMap(tunnelMap);
+    switch (mapType) {
+        case 'cave':
+            finalMap = generateCave(map);
+            break;
+        case 'tunnels':
+            finalMap = generateTunnels(map);
+            break;
+        case 'forest':
+            // Implement forest generation here
+            finalMap = map; // Placeholder
+            break;
+        default:
+            finalMap = map;
+    }
+
+    addWorldMap(finalMap);
+    createPathfindingMap(finalMap);
 };

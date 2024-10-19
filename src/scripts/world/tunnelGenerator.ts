@@ -1,6 +1,6 @@
 import { getIndexFromXY } from "../../utils/utils";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
-import { floor, TileType, wall } from "./map";
+import { floor, TileType, wall } from "./tileTypes";
 
 interface Room {
     x: number;

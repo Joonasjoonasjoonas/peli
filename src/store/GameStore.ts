@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Grid } from "pathfinding";
-import { TileType } from "../scripts/world/map";
+import { TileType } from "../scripts/world/tileTypes";
 
 class GameStore {
     singleEvents: string[] = [];

@@ -1,6 +1,6 @@
 import { getIndexFromXY } from "../../utils/utils";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
-import { floor, TileType, wall } from "./map";
+import { TileType, wall, floor } from "./tileTypes";
 
 export const generateCave = (map: any) => {
     let deathLimit = 2;
