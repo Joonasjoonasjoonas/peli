@@ -10,13 +10,13 @@ interface Room {
 }
 
 // Configuration variables
-const MIN_ROOM_WIDTH = 3;
-const MAX_ROOM_WIDTH = 5;
-const MIN_ROOM_HEIGHT = 3;
-const MAX_ROOM_HEIGHT = 5;
+const MIN_ROOM_WIDTH = 5;
+const MAX_ROOM_WIDTH = 9;
+const MIN_ROOM_HEIGHT = 5;
+const MAX_ROOM_HEIGHT = 9;
 const MIN_ROOMS = 4;
 const MAX_ROOMS = 10;
-const ROOM_SPACING = 1; // Minimum spacing between rooms
+const ROOM_SPACING = 3; // Minimum spacing between rooms
 
 export const generateTunnels = (map: TileType[]): TileType[] => {
     const rooms: Room[] = [];
