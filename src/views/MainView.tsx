@@ -13,6 +13,7 @@ import { populate } from "../scripts/actors/populate";
 import ModalWindow from "../components/ModalWindow";
 import PlayerStore from "../store/PlayerStore";
 import { updatePlayerFOV } from "../scripts/player/fov";
+import { movementKeys } from "../scripts/player/movementKeys";
 
 const MainContainer = styled.div`
     display: flex;
@@ -50,17 +51,17 @@ const MainView = () => {
             if (event.repeat) {
                 return;
             }
-            const lowercaseKey = event.key.toLowerCase();
+            const key = event.key;
             if (
-                ["w", "a", "x", "d", "q", "z", "c", "e"].includes(lowercaseKey)
+                movementKeys.includes(key)
             ) {
                 updatePlayerFOV();
-                handleKeyPress(lowercaseKey);
+                handleKeyPress(key);
                 setTurn(turn + 1);
                 checkForRandomEvent();
                 addCompleteLogMessage();
                 tryMoveActor();
-            } else if (lowercaseKey === "p") {
+            } else if (key.toLowerCase() === "p") {
                 generateNewWorld();
                 setTurn(0);
             }
