@@ -4,7 +4,7 @@ import { EventWindow } from "../components/EventWindow";
 import { WorldMap } from "../components/WorldMap";
 import GameStore from "../store/GameStore";
 import { tryMoveActor } from "../scripts/actors/movement";
-import { createWorldMap} from "../scripts/world/map";
+import { createWorldMap} from "../scripts/world/mapCreator";
 import { TileType } from "../scripts/world/tileTypes";
 import { checkForRandomEvent } from "../scripts/world/randomEvents";
 import { StatWindow } from "../components/StatWindow";
