@@ -16,11 +16,11 @@ interface Point {
 
 // Configuration variables
 const MIN_ROOM_WIDTH = 5;
-const MAX_ROOM_WIDTH = 9;
-const MIN_ROOM_HEIGHT = 5;
-const MAX_ROOM_HEIGHT = 9;
-const MIN_ROOMS = 4;
-const MAX_ROOMS = 10;
+const MAX_ROOM_WIDTH = 15;
+const MIN_ROOM_HEIGHT = 4;
+const MAX_ROOM_HEIGHT = 8;
+const MIN_ROOMS = 5;
+const MAX_ROOMS = 30;
 const ROOM_SPACING = 1; // Minimum spacing between rooms
 
 export const generateTunnels = (map: TileType[]): TileType[] => {
