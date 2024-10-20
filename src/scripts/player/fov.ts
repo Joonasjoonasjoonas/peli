@@ -5,7 +5,7 @@ import { getIndexFromXY } from "../../utils/utils";
 export const updatePlayerFOV = () => {
     const { playerCoords } = PlayerStore;
     const { worldMap, setTileVisible, setTileExplored } = GameStore;
-    const radius = 6;
+    const radius = 5;
 
     // Set all visible tiles to not visible
     worldMap.forEach((tile, index) => {

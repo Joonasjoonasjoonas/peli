@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
+import { WORLD_WIDTH } from "../scripts/game";
+
 const StatPanelContainer = styled.div`
     box-sizing: border-box;
     display: flex;
@@ -13,7 +15,7 @@ const StatPanelContainer = styled.div`
     margin-left: 10px;
     margin-right: 10px;
     padding: 10px;
-    width: calc(94 * 15px); // Match the width of the MapContainer
+    width: calc(${WORLD_WIDTH + 2} * 15px;
 `;
 
 interface Props {
