@@ -19,17 +19,16 @@ import { observer } from "mobx-react-lite";
 import { reaction } from "mobx";
 
 const MainContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    padding: 10px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
 `;
 
 const UIContainer = styled.div`
-    width: 100%;
+  width: 100%;
 `;
 
 const MainView = observer(() => {
@@ -40,7 +39,7 @@ const MainView = observer(() => {
     const { playerIsCaught } = PlayerStore;
 
     const generateNewWorld = useCallback(() => {
-        createWorldMap('cave');
+        createWorldMap('tunnels');
         populate();
         const { worldMap } = GameStore;
         setCurrentWorldMap(worldMap);
