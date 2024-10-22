@@ -22,17 +22,30 @@ const Tile = styled.div<{ tile: TileType; visible: boolean; explored: boolean }>
             ? "#282828" // very dark gray
             : "transparent"};
     width: 100%;
+    height: 100%;
     z-index: 1;
-`;
-
-const Player = styled.div`
-    color: white;
-    z-index: 2;
+    font-size: 20px;
+    line-height: 1;
 `;
 
 const StyledActor = styled.div<{ color: string }>`
     color: ${(p) => p.color};
     z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+`;
+
+const Player = styled.div`
+    color: white;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 `;
 
 interface Props {

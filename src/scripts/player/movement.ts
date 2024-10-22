@@ -73,6 +73,7 @@ export const tryMovePlayer = (direction: string) => {
                 updatePlayerCoords(playerCoords.x, playerCoords.y - 1);
                 addLogMessage("You move north.");
                 updatePlayerFOV();
+                GameStore.triggerMapUpdate();
             }
             break;
 
@@ -81,6 +82,7 @@ export const tryMovePlayer = (direction: string) => {
                 updatePlayerCoords(playerCoords.x - 1, playerCoords.y);
                 addLogMessage("You move west.");
                 updatePlayerFOV();
+                GameStore.triggerMapUpdate();
             }
             break;
 
@@ -89,6 +91,7 @@ export const tryMovePlayer = (direction: string) => {
                 updatePlayerCoords(playerCoords.x, playerCoords.y + 1);
                 addLogMessage("You move south.");
                 updatePlayerFOV();
+                GameStore.triggerMapUpdate();
             }
             break;
 
@@ -105,6 +108,7 @@ export const tryMovePlayer = (direction: string) => {
                 updatePlayerCoords(playerCoords.x - 1, playerCoords.y - 1);
                 addLogMessage("You move north-west.");
                 updatePlayerFOV();
+                GameStore.triggerMapUpdate();
             }
             break;
 
@@ -113,6 +117,7 @@ export const tryMovePlayer = (direction: string) => {
                 updatePlayerCoords(playerCoords.x - 1, playerCoords.y + 1);
                 addLogMessage("You move south-west.");
                 updatePlayerFOV();
+                GameStore.triggerMapUpdate();
             }
             break;
 
@@ -121,6 +126,7 @@ export const tryMovePlayer = (direction: string) => {
                 updatePlayerCoords(playerCoords.x + 1, playerCoords.y - 1);
                 addLogMessage("You move north-east.");
                 updatePlayerFOV();
+                GameStore.triggerMapUpdate();
             }
             break;
 
@@ -129,6 +135,7 @@ export const tryMovePlayer = (direction: string) => {
                 updatePlayerCoords(playerCoords.x + 1, playerCoords.y + 1);
                 addLogMessage("You move south-east.");
                 updatePlayerFOV();
+                GameStore.triggerMapUpdate();
             }
             break;
 

@@ -15,6 +15,9 @@ import PlayerStore from "../store/PlayerStore";
 import { updatePlayerFOV } from "../scripts/player/fov";
 import { movementKeys } from "../scripts/player/handleKeyPress";
 
+import { observer } from "mobx-react-lite";
+import { reaction } from "mobx";
+
 const MainContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -29,7 +32,7 @@ const UIContainer = styled.div`
     width: 100%;
 `;
 
-const MainView = () => {
+const MainView = observer(() => {
     const [currentWorldMap, setCurrentWorldMap] = useState<TileType[]>([]);
     const [turn, setTurn] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
@@ -37,12 +40,23 @@ const MainView = () => {
     const { playerIsCaught } = PlayerStore;
 
     const generateNewWorld = useCallback(() => {
-        createWorldMap('tunnels');
+        createWorldMap('cave');
         populate();
         const { worldMap } = GameStore;
         setCurrentWorldMap(worldMap);
         updatePlayerFOV();
     }, []);
+
+    useEffect(() => {
+        const disposer = reaction(
+          () => GameStore.worldMap,
+          (newWorldMap) => {
+            setCurrentWorldMap(newWorldMap);
+          }
+        );
+      
+        return () => disposer();
+      }, []);
 
     // create world map on first render
     useEffect(() => {
@@ -100,6 +114,6 @@ const MainView = () => {
             />
         </MainContainer>
     );
-};
+});
 
 export default MainView;

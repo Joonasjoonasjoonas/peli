@@ -28,7 +28,6 @@ export const generateCave = (map: any) => {
         }
         return count;
     };
-
     const doSimulationStep = (map: any) => {
         //Here's the new map we're going to copy our data into
         let newMap: TileType[] = [];

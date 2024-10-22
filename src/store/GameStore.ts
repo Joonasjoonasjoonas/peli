@@ -40,6 +40,10 @@ class GameStore {
             this.worldMap[index].explored = explored;
         }
     };  
+
+    triggerMapUpdate = () => {
+        this.worldMap = [...this.worldMap];
+    };
 }
 
 export default new GameStore();

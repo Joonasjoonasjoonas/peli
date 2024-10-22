@@ -40,4 +40,6 @@ export const updatePlayerFOV = () => {
             }
         }
     }
+    GameStore.triggerMapUpdate();
 };
+

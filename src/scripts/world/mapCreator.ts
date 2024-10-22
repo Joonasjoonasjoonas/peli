@@ -67,4 +67,5 @@ export const createWorldMap = (mapType: 'forest' | 'cave' | 'tunnels') => {
 
     addWorldMap(finalMap);
     createPathfindingMap(finalMap);
+    GameStore.triggerMapUpdate();
 };
