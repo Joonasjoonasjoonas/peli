@@ -31,14 +31,8 @@ export const updatePlayerFOV = () => {
             
             const tile = worldMap[index];
             
-            // Check if the player is on the same coordinates with a tile that has obscuring true
-            if (r === 0 && tile.obscuring) {
-                // Randomly break the line of fov with 50% chance
-                if (Math.random() < 0.5) {
-                    break;
-                }
-            } else if (tile.obscuring || tile.blocking) {
-                // If the player is on the same coordinates with a tile that has obscuring false, break the line of fov every time it bumps into tiles that have obscuring true
+            // Randomly block the view with 50% chance when on a tile that has obscuring true
+            if (tile.obscuring || tile.blocking) {
                 break;
             } else {
                 setTileVisible(index, true);
