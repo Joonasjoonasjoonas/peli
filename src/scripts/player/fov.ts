@@ -6,7 +6,7 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 export const updatePlayerFOV = () => {
     const { playerCoords } = PlayerStore;
     const { worldMap, setTileVisible, setTileExplored } = GameStore;
-    const radius = 5;
+    const radius = 10;
 
     // Set all visible tiles to not visible
     worldMap.forEach((tile, index) => {
