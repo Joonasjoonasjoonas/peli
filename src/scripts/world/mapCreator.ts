@@ -3,6 +3,7 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 import { getIndexFromXY, randomNumber } from "../../utils/utils";
 import { generateCave } from "./caveGenerator";
 import { generateTunnels } from "./tunnelGenerator";
+import { generateForest } from "./forestGenerator";
 import { TileType, wall, floor } from "./tileTypes";
 
 const createPathfindingMap = (map: TileType[]) => {
@@ -33,7 +34,9 @@ export const createWorldMap = (mapType: 'forest' | 'cave' | 'tunnels') => {
             if (rnd <= 3) return floor;
             else return wall;
         });
-    } else {
+    } 
+    
+    else {
         map = Array.from({ length: WORLD_HEIGHT * WORLD_WIDTH }, () => wall);
     }
 
@@ -58,8 +61,7 @@ export const createWorldMap = (mapType: 'forest' | 'cave' | 'tunnels') => {
             finalMap = generateTunnels(map);
             break;
         case 'forest':
-            // Implement forest generation here
-            finalMap = map; // Placeholder
+            finalMap = generateForest();
             break;
         default:
             finalMap = map;

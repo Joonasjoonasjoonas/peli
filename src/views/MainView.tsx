@@ -39,7 +39,7 @@ const MainView = observer(() => {
     const { playerIsCaught } = PlayerStore;
 
     const generateNewWorld = useCallback(() => {
-        createWorldMap('tunnels');
+        createWorldMap('forest');
         populate();
         const { worldMap } = GameStore;
         setCurrentWorldMap(worldMap);

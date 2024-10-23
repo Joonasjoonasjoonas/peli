@@ -1,4 +1,4 @@
-export interface TileType {
+export interface BaseTileType {
     type: string;
     blocking: boolean;
     visible: boolean;
@@ -6,6 +6,10 @@ export interface TileType {
     ascii: string;
     color: string;
     backgroundColor: string;
+}
+
+export interface TileType extends BaseTileType {
+    obscuring?: boolean;
 }
 
 export const floor: TileType = {
@@ -36,4 +40,35 @@ export const empty: TileType = {
     ascii: " ",
     color: "#000000",
     backgroundColor: "#000000", // Black background for empty
+};
+
+export const bush: TileType = {
+    type: "bush",
+    blocking: false,
+    visible: false,
+    explored: false,
+    ascii: "\"",
+    color: "#008000", // Green color for bush
+    backgroundColor: "#000000", // Black background for bush
+    obscuring: true,
+};
+
+export const grass: TileType = {
+    type: "grass",
+    blocking: false,
+    visible: false,
+    explored: false,
+    ascii: ",",
+    color: "#008000", // Green color for grass
+    backgroundColor: "#000000", // Black background for grass
+};
+
+export const soil: TileType = {
+    type: "soil",
+    blocking: false,
+    visible: false,
+    explored: false,
+    ascii: ".",
+    color: "#008000", // Green color for soil
+    backgroundColor: "#000000", // Black background for soil
 };

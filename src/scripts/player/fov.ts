@@ -6,6 +6,8 @@ export const updatePlayerFOV = () => {
     const { playerCoords } = PlayerStore;
     const { worldMap, setTileVisible, setTileExplored } = GameStore;
     const radius = 5;
+    const WORLD_WIDTH = 110; // Assuming WORLD_WIDTH is defined or imported
+    const WORLD_HEIGHT = 30; // Assuming WORLD_HEIGHT is defined or imported
 
     // Set all visible tiles to not visible
     worldMap.forEach((tile, index) => {
@@ -22,24 +24,15 @@ export const updatePlayerFOV = () => {
             x = Math.round(playerCoords.x + r * Math.cos(angle * Math.PI / 180));
             y = Math.round(playerCoords.y + r * Math.sin(angle * Math.PI / 180));
             
+            // Ensure x and y are within the map boundaries
+            x = Math.max(0, Math.min(x, WORLD_WIDTH - 1));
+            y = Math.max(0, Math.min(y, WORLD_HEIGHT - 1));
+            
             const index = getIndexFromXY(x, y);
             
-            if (index < 0 || index >= worldMap.length) {
-                break;
-            }
-            
-            const tile = worldMap[index];
-            
-            if (tile.type === "floor") {
-                setTileVisible(index, true);
-                setTileExplored(index, true);
-            } else if (tile.type === "wall") {
-                setTileVisible(index, true);
-                setTileExplored(index, true);
-                break;
-            }
+            setTileVisible(index, true);
+            setTileExplored(index, true);
         }
     }
     GameStore.triggerMapUpdate();
 };
-
