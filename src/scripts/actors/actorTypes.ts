@@ -18,7 +18,7 @@ export interface Actor extends BaseActor {
 export const lenkkeilija: Actor = {
     id: 1,
     race: "Lenkkeilijä",
-    char: "l",
+    char: "@",
     hitpoints: 15,
     xCoord: 0,
     yCoord: 0,
