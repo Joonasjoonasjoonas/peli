@@ -14,7 +14,6 @@ import ModalWindow from "../components/ModalWindow";
 import PlayerStore from "../store/PlayerStore";
 import { updatePlayerFOV } from "../scripts/player/fov";
 import { movementKeys } from "../scripts/player/handleKeyPress";
-
 import { observer } from "mobx-react-lite";
 import { reaction } from "mobx";
 
@@ -39,7 +38,7 @@ const MainView = observer(() => {
     const { playerIsCaught } = PlayerStore;
 
     const generateNewWorld = useCallback(() => {
-        createWorldMap('forest');
+        createWorldMap('tunnels');
         populate();
         const { worldMap } = GameStore;
         setCurrentWorldMap(worldMap);
@@ -55,7 +54,7 @@ const MainView = observer(() => {
         );
       
         return () => disposer();
-      }, []);
+    }, []);
 
     // create world map on first render
     useEffect(() => {
@@ -70,6 +69,31 @@ const MainView = observer(() => {
                 return;
             }
             const key = event.key;
+
+            // Save map with Ctrl + S
+            if (event.ctrlKey && key.toLowerCase() === 's') {
+                event.preventDefault();
+                const mapName = `Map ${new Date().toLocaleString()}`;
+                GameStore.saveCurrentMap(mapName);
+                GameStore.addLogMessage(`Map saved as: ${mapName}`);
+                addCompleteLogMessage();
+                return;
+            }
+
+            // Load last saved map with Ctrl + L
+            if (event.ctrlKey && key.toLowerCase() === 'l') {
+                event.preventDefault();
+                const savedMaps = GameStore.getAllSavedMaps();
+                if (savedMaps.length > 0) {
+                    const lastMap = savedMaps[savedMaps.length - 1];
+                    GameStore.loadMap(lastMap.id);
+                    GameStore.addLogMessage(`Loaded map: ${lastMap.name}`);
+                    addCompleteLogMessage();
+                    updatePlayerFOV();
+                }
+                return;
+            }
+
             if (movementKeys.includes(key)) {
                 handleKeyPress(key);
                 setTurn(turn + 1);

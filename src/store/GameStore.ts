@@ -1,6 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { Grid } from "pathfinding";
 import { TileType } from "../scripts/world/tileTypes";
+import PlayerStore from "./PlayerStore";
+import { MapStorageService } from "../services/MapStorageService";
 
 class GameStore {
     singleEvents: string[] = [];
@@ -43,6 +45,27 @@ class GameStore {
 
     triggerMapUpdate = () => {
         this.worldMap = [...this.worldMap];
+    };
+
+    saveCurrentMap = (mapName: string) => {
+        const { playerCoords } = PlayerStore;
+        MapStorageService.saveMap(mapName, this.worldMap, playerCoords);
+    };
+
+    loadMap = (mapId: string) => {
+        const savedMap = MapStorageService.getMap(mapId);
+        if (savedMap) {
+            this.worldMap = savedMap.mapData;
+            PlayerStore.updatePlayerCoords(
+                savedMap.playerPosition.x,
+                savedMap.playerPosition.y
+            );
+            this.triggerMapUpdate();
+        }
+    };
+
+    getAllSavedMaps = () => {
+        return MapStorageService.getAllMaps();
     };
 }
 
