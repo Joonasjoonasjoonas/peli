@@ -72,3 +72,13 @@ export const soil: TileType = {
     color: "#008000", // Green color for soil
     backgroundColor: "#000000", // Black background for soil
 };
+
+export const tree: TileType = {
+    type: "tree",
+    blocking: true,
+    visible: false,
+    explored: false,
+    ascii: "^",
+    color: "#00FF00", // Bright green color for tree
+    backgroundColor: "#000000", // Black background for tree
+};

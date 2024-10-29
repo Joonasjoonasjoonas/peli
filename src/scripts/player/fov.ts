@@ -31,15 +31,14 @@ export const updatePlayerFOV = () => {
             
             const tile = worldMap[index];
             
-            // Randomly block the view with 50% chance when on a tile that has obscuring true
+            setTileVisible(index, true);
+            setTileExplored(index, true);
+            
+            // Stop after marking blocking tile as visible
             if (tile.obscuring || tile.blocking) {
                 break;
-            } else {
-                setTileVisible(index, true);
-                setTileExplored(index, true);
             }
         }
     }
     GameStore.triggerMapUpdate();
 };
-
