@@ -2,9 +2,8 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 import { TileType, bush, grass, soil, tree } from "./tileTypes";
 import { createNoise2D } from "simplex-noise"; 
 
-const noise2D = createNoise2D();
-
 export const generateForest = (): TileType[] => {
+    const noise2D = createNoise2D();
     const map: TileType[] = [];
     const noiseScale = 0.1; // Adjust for more or less detail
     const thresholdGrass = 0.01; // Threshold for grass
