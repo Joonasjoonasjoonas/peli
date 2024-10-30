@@ -32,6 +32,10 @@ class ActorStore {
         this.actors = updatedActors;
     };
 
+    clearActors = () => {
+        this.actors = [];
+    };
+
     // updateActorCoords = (x: number, y: number) => {
     //     this.actorCoords.x = x;
     //     this.actorCoords.y = y;

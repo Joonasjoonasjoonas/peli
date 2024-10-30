@@ -4,7 +4,9 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 import { NPC} from "./actorTypes"; // Importing the warrior actor type
 
 export const populate = () => {
-    const { addActor } = ActorStore;
+    const { addActor,clearActors } = ActorStore;
+    // Clear existing actors
+    clearActors();
 
     for (let i = 0; i < 10; i++) {
         const actor: Actor = {
