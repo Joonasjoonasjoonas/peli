@@ -15,13 +15,12 @@ export interface Actor extends BaseActor {
 }
 
 // Example actor types without specific races
-export const lenkkeilija: Actor = {
+export const NPC: Actor = {
     id: 1,
-    race: "Lenkkeilijä",
+    race: "NPC",
     char: "@",
     hitpoints: 15,
     xCoord: 0,
     yCoord: 0,
-    charColor: "blue",
+    charColor: "#1E90FF",
 };
-
