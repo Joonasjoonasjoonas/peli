@@ -1,2 +1,2 @@
 export const WORLD_HEIGHT = 40;
-export const WORLD_WIDTH = 110;
+export const WORLD_WIDTH = 70;
