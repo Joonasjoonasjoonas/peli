@@ -33,10 +33,12 @@ const UIContainer = styled.div`
 const MainView = observer(() => {
     const [currentWorldMap, setCurrentWorldMap] = useState<TileType[]>([]);
     const [turn, setTurn] = useState(0);
+    const [currentMapType, setCurrentMapType] = useState<'tunnels' | 'forest' | 'cave'>('tunnels');
     // const [modalOpen, setModalOpen] = useState(false);
 
     const { playerIsCaught } = PlayerStore;
     const generateNewWorld = useCallback((mapType: 'tunnels' | 'forest' | 'cave' = 'tunnels') => {
+        setCurrentMapType(mapType);
         createWorldMap(mapType);
         populate();
         const { worldMap } = GameStore;
@@ -121,18 +123,24 @@ const MainView = observer(() => {
                     prevMap.map(tile => ({ ...tile, visible: true }))
                 );
                 setTurn(0);
-            } else {
-                setTurn(turn + 1);
-                checkForRandomEvent();
-                addCompleteLogMessage();
-                tryMoveActor();
-            }
+            } else if (key === "M") {
+                generateNewWorld(currentMapType);
+                setCurrentWorldMap(prevMap => 
+                    prevMap.map(tile => ({ ...tile, visible: true }))
+                );
+                setTurn(0);
+            } // else {
+            //     setTurn(turn + 1);
+            //     checkForRandomEvent();
+            //     addCompleteLogMessage();
+            //     tryMoveActor();
+            // }
         };
 
         window.addEventListener("keydown", keyPress);
 
         return () => window.removeEventListener("keydown", keyPress);
-    }, [turn, playerIsCaught, generateNewWorld]);
+    }, [turn, playerIsCaught, generateNewWorld, currentMapType]);
 
     return (
         <MainContainer>
