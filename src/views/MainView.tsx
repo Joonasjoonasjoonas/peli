@@ -10,7 +10,7 @@ import { checkForRandomEvent } from "../scripts/world/randomEvents";
 import { StatPanel } from "../components/StatPanel";
 import { handleKeyPress } from "../scripts/player/handleKeyPress";
 import { populate } from "../scripts/actors/populate";
-import ModalWindow from "../components/ModalWindow";
+// import ModalWindow from "../components/ModalWindow";
 import PlayerStore from "../store/PlayerStore";
 import { updatePlayerFOV } from "../scripts/player/fov";
 import { movementKeys } from "../scripts/player/handleKeyPress";
@@ -33,12 +33,11 @@ const UIContainer = styled.div`
 const MainView = observer(() => {
     const [currentWorldMap, setCurrentWorldMap] = useState<TileType[]>([]);
     const [turn, setTurn] = useState(0);
-    const [modalOpen, setModalOpen] = useState(false);
+    // const [modalOpen, setModalOpen] = useState(false);
 
     const { playerIsCaught } = PlayerStore;
-
-    const generateNewWorld = useCallback(() => {
-        createWorldMap('tunnels');
+    const generateNewWorld = useCallback((mapType: 'tunnels' | 'forest' | 'cave' = 'tunnels') => {
+        createWorldMap(mapType);
         populate();
         const { worldMap } = GameStore;
         setCurrentWorldMap(worldMap);
@@ -104,8 +103,20 @@ const MainView = observer(() => {
                 setCurrentWorldMap(prevMap => 
                     prevMap.map(tile => ({ ...tile, visible: true }))
                 );
-            } else if (key.toLowerCase() === "m") {
-                generateNewWorld();
+            } else if (key === "F") {
+                generateNewWorld('forest');
+                setCurrentWorldMap(prevMap => 
+                    prevMap.map(tile => ({ ...tile, visible: true }))
+                );
+                setTurn(0);
+            } else if (key === "C") {
+                generateNewWorld('cave');
+                setCurrentWorldMap(prevMap => 
+                    prevMap.map(tile => ({ ...tile, visible: true }))
+                );
+                setTurn(0);
+            } else if (key === "T") {
+                generateNewWorld('tunnels');
                 setCurrentWorldMap(prevMap => 
                     prevMap.map(tile => ({ ...tile, visible: true }))
                 );
@@ -130,11 +141,11 @@ const MainView = observer(() => {
                 <StatPanel turn={turn} />
                 <EventPanel />
             </UIContainer>
-            <ModalWindow
+            {/* <ModalWindow
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
-                textContent={"Nyt se nappas sut!"}
-            />
+              
+            /> */}
         </MainContainer>
     );
 });
