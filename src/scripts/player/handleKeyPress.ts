@@ -7,26 +7,34 @@ import { createWorldMap } from "../world/mapCreator";
 import { populate } from "../actors/populate";
 
 export const movementKeys = ["w", "a", "x", "d", "q", "e", "z", "c"];
-
 type MapType = 'tunnels' | 'forest' | 'cave';
 
 export const generateNewWorld = (mapType: MapType = 'forest') => {
     createWorldMap(mapType);
     populate();
-    const { worldMap } = GameStore;
     updatePlayerFOV();
-    return worldMap;
+    return GameStore.worldMap;
+};
+
+const generateAndSetMap = (
+    mapType: MapType,
+    setCurrentWorldMap?: (fn: (prev: any[]) => any[]) => void,
+    setTurn?: (fn: (prev: number) => number) => void
+) => {
+    const newMap = generateNewWorld(mapType);
+    setCurrentWorldMap?.(prevMap => newMap.map(tile => ({ ...tile, visible: true })));
+    setTurn?.(prev => 0);
 };
 
 export const handleKeyPress = (
-    key: string, 
-    setTurn?: (fn: (prev: number) => number) => void,
+    key: string,
+    setTurn?: (fn: (prev: number) => number) => void, 
     setCurrentWorldMap?: (fn: (prev: any[]) => any[]) => void,
     currentMapType?: MapType
 ) => {
     const { addCompleteLogMessage, addLogMessage } = GameStore;
 
-    // Handle Ctrl + S
+    // Handle save/load shortcuts
     if (key === 'ctrl+s') {
         const mapName = `Map ${new Date().toLocaleString()}`;
         GameStore.saveCurrentMap(mapName);
@@ -35,72 +43,46 @@ export const handleKeyPress = (
         return;
     }
 
-    // Handle Ctrl + L
-    if (key === 'ctrl+l') {
-        const savedMaps = GameStore.getAllSavedMaps();
-        if (savedMaps.length > 0) {
-            const lastMap = savedMaps[savedMaps.length - 1];
-            GameStore.loadMap(lastMap.id);
-            addLogMessage(`Loaded map: ${lastMap.name}`);
-            addCompleteLogMessage();
-            updatePlayerFOV();
-        }
+    if (key === 'ctrl+l' && GameStore.getAllSavedMaps().length > 0) {
+        const lastMap = GameStore.getAllSavedMaps().slice(-1)[0];
+        GameStore.loadMap(lastMap.id);
+        addLogMessage(`Loaded map: ${lastMap.name}`);
+        addCompleteLogMessage();
+        updatePlayerFOV();
         return;
     }
 
+    // Handle movement
     if (movementKeys.includes(key)) {
         handleMovement(key);
         setTurn?.(prev => prev + 1);
         checkForRandomEvent();
         addCompleteLogMessage();
         tryMoveActor();
-    } else if (key.toLowerCase() === "p") {
-        setCurrentWorldMap?.(prevMap => 
-            prevMap.map(tile => ({ ...tile, visible: true }))
-        );
-    } else if (key === "F") {
-        const newMap = generateNewWorld('forest');
-        setCurrentWorldMap?.(prevMap => 
-            newMap.map(tile => ({ ...tile, visible: true }))
-        );
-        setTurn?.(prev => 0);
-    } else if (key === "C") {
-        const newMap = generateNewWorld('cave');
-        setCurrentWorldMap?.(prevMap => 
-            newMap.map(tile => ({ ...tile, visible: true }))
-        );
-        setTurn?.(prev => 0);
-    } else if (key === "T") {
-        const newMap = generateNewWorld('tunnels');
-        setCurrentWorldMap?.(prevMap => 
-            newMap.map(tile => ({ ...tile, visible: true }))
-        );
-        setTurn?.(prev => 0);
-    } else if (key === "M") {
-        const newMap = generateNewWorld(currentMapType || 'forest');
-        setCurrentWorldMap?.(prevMap => 
-            newMap.map(tile => ({ ...tile, visible: true }))
-        );
-        setTurn?.(prev => 0);
+        return;
+    }
+
+    // Handle map generation/visibility commands
+    const mapCommands: { [key: string]: MapType | undefined } = {
+        'F': 'forest',
+        'C': 'cave', 
+        'T': 'tunnels',
+        'M': currentMapType || 'forest'
+    };
+
+    if (key.toLowerCase() === 'p') {
+        setCurrentWorldMap?.(prevMap => prevMap.map(tile => ({ ...tile, visible: true })));
+    } else if (key in mapCommands) {
+        generateAndSetMap(mapCommands[key] as MapType, setCurrentWorldMap, setTurn);
     }
 };
 
 const handleMovement = (key: string) => {
-    const directionMap: { [key: string]: string } = {
-        w: "n",
-        d: "e",
-        x: "s",
-        a: "w",
-        q: "nw",
-        e: "ne",
-        z: "sw",
-        c: "se"
+    const directions: Record<string, string> = {
+        w: "n", d: "e", x: "s", a: "w",
+        q: "nw", e: "ne", z: "sw", c: "se"
     };
-
-    const direction = directionMap[key];
-    if (direction) {
-        tryMovePlayer(direction);
-    }
+    if (directions[key]) tryMovePlayer(directions[key]);
 };
 
 export const handleKeyboardEvent = (event: KeyboardEvent, options: {
@@ -108,25 +90,13 @@ export const handleKeyboardEvent = (event: KeyboardEvent, options: {
     setCurrentWorldMap?: (fn: (prev: any[]) => any[]) => void,
     currentMapType?: MapType
 }) => {
-    const { setTurn, setCurrentWorldMap, currentMapType } = options;
+    if (event.repeat) return;
 
-    if (event.repeat) {
+    if (event.ctrlKey && ['s', 'l'].includes(event.key.toLowerCase())) {
+        event.preventDefault();
+        handleKeyPress(`ctrl+${event.key.toLowerCase()}`, options.setTurn, options.setCurrentWorldMap);
         return;
     }
 
-    // Handle save/load keyboard shortcuts
-    if (event.ctrlKey) {
-        if (event.key.toLowerCase() === 's') {
-            event.preventDefault();
-            handleKeyPress('ctrl+s');
-            return;
-        }
-        if (event.key.toLowerCase() === 'l') {
-            event.preventDefault();
-            handleKeyPress('ctrl+l');
-            return;
-        }
-    }
-
-    handleKeyPress(event.key, setTurn, setCurrentWorldMap, currentMapType);
+    handleKeyPress(event.key, options.setTurn, options.setCurrentWorldMap, options.currentMapType);
 };
