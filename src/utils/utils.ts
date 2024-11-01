@@ -1,6 +1,4 @@
-import GameStore from "../store/GameStore";
 import { WORLD_WIDTH } from "../scripts/game";
-import { TileType } from "../scripts/world/tileTypes";
 
 export const randomNumber = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min) + min);
@@ -10,29 +8,15 @@ export const getIndexFromXY = (x: number, y: number): number => {
     return x + WORLD_WIDTH * y;
 };
 
-export const getAdjacentTile = (x: number, y: number, direction: string): TileType | undefined => {
-    const { worldMap } = GameStore;
-
-    switch (direction) {
-        case "n":
-            return worldMap[getIndexFromXY(x, y - 1)];
-        case "w":
-            return worldMap[getIndexFromXY(x - 1, y)];
-        case "s":
-            return worldMap[getIndexFromXY(x, y + 1)];
-        case "e":
-            return worldMap[getIndexFromXY(x + 1, y)];
-        case "nw":
-            return worldMap[getIndexFromXY(x - 1, y - 1)];
-        case "sw":
-            return worldMap[getIndexFromXY(x - 1, y + 1)];
-        case "se":
-            return worldMap[getIndexFromXY(x + 1, y + 1)];
-        case "ne":
-            return worldMap[getIndexFromXY(x + 1, y - 1)];
-        default:
-            return undefined;
-    }
+export const directionDeltas = {
+    n:  [0, -1],
+    s:  [0, 1],
+    w:  [-1, 0],
+    e:  [1, 0],
+    nw: [-1, -1],
+    ne: [1, -1],
+    sw: [-1, 1],
+    se: [1, 1]
 };
 
 export const getDistance = (x1: number, y1: number, x2: number, y2: number): number => {
