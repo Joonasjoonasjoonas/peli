@@ -1,5 +1,5 @@
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
-import { TileType, bush, grass, soil, tree } from "./tileTypes";
+import { TileType, bush, grass, soil, tree, stairsDown } from "./tileTypes";
 import { createNoise2D } from "simplex-noise"; 
 
 export const generateForest = (): TileType[] => {
@@ -59,6 +59,24 @@ export const generateForest = (): TileType[] => {
                     map[index] = tree;
                 }
             }
+        }
+    }
+
+    // Add stairs down at a random location at least 10 tiles from spawn (1,1)
+    let stairsPlaced = false;
+    while (!stairsPlaced) {
+        const stairsX = Math.floor(Math.random() * WORLD_WIDTH);
+        const stairsY = Math.floor(Math.random() * WORLD_HEIGHT);
+        
+        // Check distance from spawn point (1,1)
+        const distance = Math.sqrt(
+            Math.pow(stairsX - 1, 2) + Math.pow(stairsY - 1, 2)
+        );
+        
+        if (distance >= 10) {
+            const stairsIndex = stairsY * WORLD_WIDTH + stairsX;
+            map[stairsIndex] = stairsDown;
+            stairsPlaced = true;
         }
     }
 

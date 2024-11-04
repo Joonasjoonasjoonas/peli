@@ -82,3 +82,23 @@ export const tree: TileType = {
     color: "#00FF00", // Bright green color for tree
     backgroundColor: "#000000", // Black background for tree
 };
+
+export const stairsDown: TileType = {
+    type: "stairsDown",
+    blocking: false,
+    visible: false,
+    explored: false,
+    ascii: ">",
+    color: "#FFFFFF", // White color for stairs
+    backgroundColor: "#000000", // Black background for stairs
+};
+
+export const stairsUp: TileType = {
+    type: "stairsDown",
+    blocking: false,
+    visible: false,
+    explored: false,
+    ascii: "<",
+    color: "#FFFFFF", // White color for stairs
+    backgroundColor: "#000000", // Black background for stairs
+};
