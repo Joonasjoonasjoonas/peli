@@ -5,8 +5,15 @@ import { tryMoveActor } from "../actors/movement";
 import { updatePlayerFOV } from "./fov";
 import { createWorldMap } from "../world/mapCreator";
 import { populate } from "../actors/populate";
+import PlayerStore from "../../store/PlayerStore";
+import { getIndexFromXY } from "../../utils/utils";
 
-export const movementKeys = ["w", "a", "x", "d", "q", "e", "z", "c"];
+export const movementKeys = ["w", "a", "x", "d", "q", "e", "z", "c", 
+    "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight",
+    "Home", "PageUp", "End", "PageDown",
+    "8", "4", "2", "6",
+    "7", "9", "1", "3"
+];
 type MapType = 'tunnels' | 'forest' | 'cave';
 
 export const generateNewWorld = (mapType: MapType = 'forest') => {
@@ -34,22 +41,24 @@ export const handleKeyPress = (
 ) => {
     const { addCompleteLogMessage, addLogMessage } = GameStore;
 
-    // Handle save/load shortcuts
-    if (key === 'ctrl+s') {
-        const mapName = `Map ${new Date().toLocaleString()}`;
-        GameStore.saveCurrentMap(mapName);
-        addLogMessage(`Map saved as: ${mapName}`);
-        addCompleteLogMessage();
-        return;
+    if (key === '>') {
+        const { playerCoords } = PlayerStore;
+        const currentTile = GameStore.worldMap[getIndexFromXY(playerCoords.x, playerCoords.y)];
+        if (currentTile.type === 'stairsDown') {
+            GameStore.changeLevel('down');
+            addLogMessage("You descend deeper into the dungeon.");
+            addCompleteLogMessage();
+        }
     }
-
-    if (key === 'ctrl+l' && GameStore.getAllSavedMaps().length > 0) {
-        const lastMap = GameStore.getAllSavedMaps().slice(-1)[0];
-        GameStore.loadMap(lastMap.id);
-        addLogMessage(`Loaded map: ${lastMap.name}`);
-        addCompleteLogMessage();
-        updatePlayerFOV();
-        return;
+    
+    if (key === '<') {
+        const { playerCoords } = PlayerStore;
+        const currentTile = GameStore.worldMap[getIndexFromXY(playerCoords.x, playerCoords.y)];
+        if (currentTile.type === 'stairsUp') {
+            GameStore.changeLevel('up');
+            addLogMessage("You climb up the stairs.");
+            addCompleteLogMessage();
+        }
     }
 
     // Handle movement
@@ -80,7 +89,11 @@ export const handleKeyPress = (
 const handleMovement = (key: string) => {
     const directions: Record<string, string> = {
         w: "n", d: "e", x: "s", a: "w",
-        q: "nw", e: "ne", z: "sw", c: "se"
+        q: "nw", e: "ne", z: "sw", c: "se",
+        ArrowUp: "n", ArrowRight: "e", ArrowDown: "s", ArrowLeft: "w",
+        Home: "nw", PageUp: "ne", End: "sw", PageDown: "se",
+        "8": "n", "6": "e", "2": "s", "4": "w",
+        "7": "nw", "9": "ne", "1": "sw", "3": "se"
     };
     if (directions[key]) tryMovePlayer(directions[key]);
 };

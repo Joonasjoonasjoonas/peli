@@ -94,7 +94,7 @@ export const stairsDown: TileType = {
 };
 
 export const stairsUp: TileType = {
-    type: "stairsDown",
+    type: "stairsUp",
     blocking: false,
     visible: false,
     explored: false,

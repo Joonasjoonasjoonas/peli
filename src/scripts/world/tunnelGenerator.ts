@@ -1,6 +1,6 @@
 import { getIndexFromXY } from "../../utils/utils";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
-import { floor, TileType, wall } from "./tileTypes";
+import { floor, TileType, wall, stairsDown, stairsUp } from "./tileTypes";
 
 interface Room {
     x: number;
@@ -97,6 +97,41 @@ export const generateTunnels = (map: TileType[]): TileType[] => {
         } else {
             console.warn("Unable to connect all rooms.");
             break;
+        }
+    }
+
+    // Add stairs up at a random floor tile
+    let stairsUpPlaced = false;
+    let stairsUpX = 0;
+    let stairsUpY = 0;
+    while (!stairsUpPlaced) {
+        const x = Math.floor(Math.random() * WORLD_WIDTH);
+        const y = Math.floor(Math.random() * WORLD_HEIGHT);
+        const index = getIndexFromXY(x, y);
+        
+        if (map[index].type === "floor") {
+            map[index] = stairsUp;
+            stairsUpPlaced = true;
+            stairsUpX = x;
+            stairsUpY = y;
+        }
+    }
+
+    // Add stairs down at least 10 tiles away from stairs up
+    let stairsDownPlaced = false;
+    while (!stairsDownPlaced) {
+        const x = Math.floor(Math.random() * WORLD_WIDTH);
+        const y = Math.floor(Math.random() * WORLD_HEIGHT);
+        const index = getIndexFromXY(x, y);
+        
+        // Check distance from stairs up
+        const distance = Math.sqrt(
+            Math.pow(x - stairsUpX, 2) + Math.pow(y - stairsUpY, 2)
+        );
+        
+        if (distance >= 10 && map[index].type === "floor") {
+            map[index] = stairsDown;
+            stairsDownPlaced = true;
         }
     }
 

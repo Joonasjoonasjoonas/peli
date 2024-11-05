@@ -2,13 +2,20 @@ import { makeAutoObservable } from "mobx";
 import { Grid } from "pathfinding";
 import { TileType } from "../scripts/world/tileTypes";
 import PlayerStore from "./PlayerStore";
-import { MapStorageService } from "../services/MapStorageService";
+import { LevelStorageService } from "../services/LevelStorageService";
+import { createWorldMap } from "../scripts/world/mapCreator";
+import { populate } from "../scripts/actors/populate";
+import { updatePlayerFOV } from "../scripts/player/fov";
+import ActorStore from "./ActorStore";
+import { WORLD_HEIGHT, WORLD_WIDTH } from "../scripts/game";
+import { getIndexFromXY } from "../utils/utils";
 
 class GameStore {
     singleEvents: string[] = [];
     completeLogMessages: string[][] = [];
     worldMap: TileType[] = [];
     pathfindingGrid: any;
+    currentLevel: number = 0;
 
     constructor() {
         makeAutoObservable(this);
@@ -47,26 +54,78 @@ class GameStore {
         this.worldMap = [...this.worldMap];
     };
 
-    saveCurrentMap = (mapName: string) => {
-        const { playerCoords } = PlayerStore;
-        MapStorageService.saveMap(mapName, this.worldMap, playerCoords);
-    };
+    // Add to existing GameStore class:
+saveCurrentLevel = () => {
+    const { playerCoords } = PlayerStore;
+    const { actors } = ActorStore;
+    LevelStorageService.saveLevel(
+        this.currentLevel,
+        this.worldMap,
+        actors,
+        playerCoords
+    );
+};
 
-    loadMap = (mapId: string) => {
-        const savedMap = MapStorageService.getMap(mapId);
-        if (savedMap) {
-            this.worldMap = savedMap.mapData;
-            PlayerStore.updatePlayerCoords(
-                savedMap.playerPosition.x,
-                savedMap.playerPosition.y
-            );
-            this.triggerMapUpdate();
+loadLevel = (level: number) => {
+    const levelData = LevelStorageService.getLevel(level);
+    if (levelData) {
+        this.worldMap = levelData.mapData;
+        ActorStore.setActors(levelData.actors);
+        PlayerStore.updatePlayerCoords(
+            levelData.playerPosition.x,
+            levelData.playerPosition.y
+        );
+        this.currentLevel = level;
+        this.triggerMapUpdate();
+    }
+};
+
+findStairsCoords = (stairsType: 'stairsUp' | 'stairsDown'): { x: number; y: number } | null => {
+    for (let y = 0; y < WORLD_HEIGHT; y++) {
+        for (let x = 0; x < WORLD_WIDTH; x++) {
+            const index = getIndexFromXY(x, y);
+            if (this.worldMap[index].type === stairsType) {
+                return { x, y };
+            }
         }
-    };
+    }
+    return null;
+};
 
-    getAllSavedMaps = () => {
-        return MapStorageService.getAllMaps();
-    };
+changeLevel = (direction: 'up' | 'down') => {
+    // Save current level
+    this.saveCurrentLevel();
+    
+    const newLevel = direction === 'down' ? this.currentLevel + 1 : this.currentLevel - 1;
+    
+    // Try to load existing level
+    const existingLevel = LevelStorageService.getLevel(newLevel);
+    if (existingLevel) {
+        this.loadLevel(newLevel);
+        
+        // Position player at appropriate stairs
+        const stairsType = direction === 'up' ? 'stairsDown' : 'stairsUp';
+        const stairsCoords = this.findStairsCoords(stairsType);
+        
+        if (stairsCoords) {
+            PlayerStore.updatePlayerCoords(stairsCoords.x, stairsCoords.y);
+        }
+    } else if (direction === 'down') {
+        // Generate new level if going down and level doesn't exist
+        this.currentLevel = newLevel;
+        createWorldMap('tunnels');
+        populate();
+        
+        // Position player at stairs up in new level
+        const stairsUpCoords = this.findStairsCoords('stairsUp');
+        if (stairsUpCoords) {
+            PlayerStore.updatePlayerCoords(stairsUpCoords.x, stairsUpCoords.y);
+        }
+        
+        updatePlayerFOV();
+    }
+};
+
 }
 
 export default new GameStore();
