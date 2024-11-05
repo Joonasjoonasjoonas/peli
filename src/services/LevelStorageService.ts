@@ -5,17 +5,25 @@ export interface LevelData {
     mapData: TileType[];
     actors: Actor[];
     playerPosition: { x: number; y: number };
+    pathfindingGrid: any;
 }
 
 export class LevelStorageService {
     private static STORAGE_KEY = 'dungeon_levels';
 
-    static saveLevel(level: number, mapData: TileType[], actors: Actor[], playerPosition: { x: number; y: number }): void {
+    static saveLevel(
+        level: number, 
+        mapData: TileType[], 
+        actors: Actor[], 
+        playerPosition: { x: number; y: number },
+        pathfindingGrid: any  // Add this parameter
+    ): void {
         const savedLevels = this.getAllLevels();
         savedLevels[level] = {
             mapData,
             actors,
-            playerPosition
+            playerPosition,
+            pathfindingGrid  // Add this line
         };
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedLevels));
     }

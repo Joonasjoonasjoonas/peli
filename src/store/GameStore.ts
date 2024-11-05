@@ -55,30 +55,32 @@ class GameStore {
     };
 
     // Add to existing GameStore class:
-saveCurrentLevel = () => {
-    const { playerCoords } = PlayerStore;
-    const { actors } = ActorStore;
-    LevelStorageService.saveLevel(
-        this.currentLevel,
-        this.worldMap,
-        actors,
-        playerCoords
-    );
-};
-
-loadLevel = (level: number) => {
-    const levelData = LevelStorageService.getLevel(level);
-    if (levelData) {
-        this.worldMap = levelData.mapData;
-        ActorStore.setActors(levelData.actors);
-        PlayerStore.updatePlayerCoords(
-            levelData.playerPosition.x,
-            levelData.playerPosition.y
+    saveCurrentLevel = () => {
+        const { playerCoords } = PlayerStore;
+        const { actors } = ActorStore;
+        LevelStorageService.saveLevel(
+            this.currentLevel,
+            this.worldMap,
+            actors,
+            playerCoords,
+            this.pathfindingGrid  // Add this line
         );
-        this.currentLevel = level;
-        this.triggerMapUpdate();
-    }
-};
+    };
+
+    loadLevel = (level: number) => {
+        const levelData = LevelStorageService.getLevel(level);
+        if (levelData) {
+            this.worldMap = levelData.mapData;
+            this.pathfindingGrid = levelData.pathfindingGrid;  // Add this line
+            ActorStore.setActors(levelData.actors);
+            PlayerStore.updatePlayerCoords(
+                levelData.playerPosition.x,
+                levelData.playerPosition.y
+            );
+            this.currentLevel = level;
+            this.triggerMapUpdate();
+        }
+    };
 
 findStairsCoords = (stairsType: 'stairsUp' | 'stairsDown'): { x: number; y: number } | null => {
     for (let y = 0; y < WORLD_HEIGHT; y++) {
