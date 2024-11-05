@@ -31,6 +31,10 @@ const MainView = observer(() => {
     // const [modalOpen, setModalOpen] = useState(false);
 
     const { playerIsCaught } = PlayerStore;
+
+    useEffect(() => {
+        GameStore.clearAllLevels();
+    }, []);
     const generateNewWorldCallback = useCallback((mapType: 'tunnels' | 'forest' | 'cave' = 'forest') => {
         setCurrentMapType(mapType);
         const newMap = generateNewWorld(mapType);

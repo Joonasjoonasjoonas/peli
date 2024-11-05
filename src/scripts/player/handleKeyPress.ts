@@ -41,6 +41,18 @@ export const handleKeyPress = (
 ) => {
     const { addCompleteLogMessage, addLogMessage } = GameStore;
 
+    if (key === '?') {
+        let totalSize = 0;
+        for (let key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+                let itemSize = (localStorage[key].length + key.length) * 2; // 2 bytes per character
+                totalSize += itemSize;
+            }
+        }
+        console.log(`Total localStorage size: ${totalSize} bytes (${(totalSize / 1024).toFixed(2)} KB)`);
+        return;
+    }
+
     if (key === '>') {
         const { playerCoords } = PlayerStore;
         const currentTile = GameStore.worldMap[getIndexFromXY(playerCoords.x, playerCoords.y)];

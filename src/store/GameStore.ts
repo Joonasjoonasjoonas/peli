@@ -126,6 +126,14 @@ changeLevel = (direction: 'up' | 'down') => {
     }
 };
 
+clearAllLevels = () => {
+    LevelStorageService.clearAllLevels();
+    this.currentLevel = 0;
+    this.worldMap = [];
+    this.singleEvents = [];
+    this.completeLogMessages = [];
+};
+
 }
 
 export default new GameStore();

@@ -35,4 +35,8 @@ export class LevelStorageService {
         delete savedLevels[level];
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedLevels));
     }
+
+    static clearAllLevels(): void {
+        localStorage.removeItem(this.STORAGE_KEY);
+    }
 }
