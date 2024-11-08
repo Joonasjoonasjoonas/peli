@@ -1,14 +1,13 @@
 import { toJS } from "mobx";
 import ActorStore from "../../store/ActorStore";
 import GameStore from "../../store/GameStore";
-import PlayerStore from "../../store/PlayerStore";
+
 import Pathfinding from "pathfinding";
-import { getDistance } from "../../utils/utils";
+
 
 const PF = Pathfinding;
 
-export const tryMoveActor = () => {
-    const { playerCoords } = PlayerStore;
+export const tryMoveActor = (destX: number  , destY: number) => {
     const { updateActorCoords, actors } = ActorStore;
     const { pathfindingGrid, addLogMessage } = GameStore;
 
@@ -20,14 +19,7 @@ export const tryMoveActor = () => {
     const allActors = toJS(actors);
 
     allActors.forEach((actor) => {
-        if (
-            getDistance(
-                playerCoords.x,
-                playerCoords.y,
-                actor.xCoord,
-                actor.yCoord
-            ) < 10
-        ) {
+        
             const finder = new PF.AStarFinder({
                 diagonalMovement: 1,
             });
@@ -35,13 +27,13 @@ export const tryMoveActor = () => {
             const path = finder.findPath(
                 actor.xCoord,
                 actor.yCoord,
-                playerCoords.x,
-                playerCoords.y,
+                destX,
+                destY,
                 grid
             );
 
             if (path[1] !== undefined) {
-                if (path[1][0] === playerCoords.x && path[1][1] === playerCoords.y) {
+                if (path[1][0] === destX && path[1][1] === destY) {
                     addLogMessage(`${actor.race} bumps into you.`);
                     return;
                 }
@@ -50,6 +42,6 @@ export const tryMoveActor = () => {
                 return;
             }
         }
-    });
+    );
     GameStore.triggerMapUpdate();
 };

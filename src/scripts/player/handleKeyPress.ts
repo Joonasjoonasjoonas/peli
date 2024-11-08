@@ -1,12 +1,12 @@
 import GameStore from "../../store/GameStore";
 import { tryMovePlayer } from "./movement";
 import { checkForRandomEvent } from "../world/randomEvents";
-import { tryMoveActor } from "../actors/movement";
 import { updatePlayerFOV } from "./fov";
 import { createWorldMap } from "../world/mapCreator";
 import { populate } from "../actors/populate";
 import PlayerStore from "../../store/PlayerStore";
 import { getIndexFromXY } from "../../utils/utils";
+import { playActors } from "../actors/actorBehaviour";
 
 export const movementKeys = ["w", "a", "x", "d", "q", "e", "z", "c", 
     "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight",
@@ -79,7 +79,7 @@ export const handleKeyPress = (
         setTurn?.(prev => prev + 1);
         checkForRandomEvent();
         addCompleteLogMessage();
-        tryMoveActor();
+        playActors();
         return;
     }
 

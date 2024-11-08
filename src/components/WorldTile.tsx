@@ -68,6 +68,7 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
         xCoord: -1,
         yCoord: -1,
         charColor: "",
+        behaviour: "",
     };
 
     actors.forEach((actor) => {

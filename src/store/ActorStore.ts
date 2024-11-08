@@ -8,6 +8,7 @@ export interface Actor {
     xCoord: number;
     yCoord: number;
     charColor: string;
+    behaviour: string;
 }
 
 class ActorStore {
