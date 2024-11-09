@@ -4,20 +4,25 @@ import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 import { NPC} from "./actorTypes"; // Importing the warrior actor type
 
 export const populate = () => {
-    const { addActor,clearActors } = ActorStore;
+    const { addActor, clearActors } = ActorStore;
     // Clear existing actors
     clearActors();
 
     for (let i = 0; i < 10; i++) {
         const actor: Actor = {
-            ...NPC, // Use the warrior as the base actor
-            id: i, // Assign unique ID
-            hitpoints: randomNumber(5, 10), // Randomize hitpoints
-            xCoord: randomNumber(20, WORLD_WIDTH - 5), // Randomize x coordinate
-            yCoord: randomNumber(20, WORLD_HEIGHT - 5), // Randomize y coordinate
+            ...NPC,
+            id: i,
+            race: NPC.race || "NPC",
+            char: NPC.char || "@",
+            hitpoints: randomNumber(5, 10),
+            xCoord: randomNumber(20, WORLD_WIDTH - 5),
+            yCoord: randomNumber(20, WORLD_HEIGHT - 5),
+            charColor: NPC.charColor || "white",
+            behaviour: NPC.behaviour || "wander",
+            destinationX: 0,
+            destinationY: 0
         };
 
         addActor(actor);
     }
- 
 };

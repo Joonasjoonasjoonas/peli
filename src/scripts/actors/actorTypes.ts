@@ -1,12 +1,14 @@
 export interface BaseActor {
-    id: number;
-    race: string;
-    char: string;
-    hitpoints: number;
-    xCoord: number;
-    yCoord: number;
-    charColor: string; 
-    behaviour: string;
+    id?: number;
+    race?: string;
+    char?: string;
+    hitpoints?: number;
+    xCoord?: number;
+    yCoord?: number;
+    charColor?: string; 
+    behaviour?: string;
+    destinationX?: number;
+    destinationY?: number;
 }
 
 export interface Actor extends BaseActor {
@@ -25,4 +27,6 @@ export const NPC: Actor = {
     yCoord: 0,
     charColor: "#1E90FF",
     behaviour: "wander",
+    destinationX: 0,
+    destinationY: 0
 };

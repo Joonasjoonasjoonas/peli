@@ -8,7 +8,7 @@ import Pathfinding from "pathfinding";
 const PF = Pathfinding;
 
 export const tryMoveActor = (destX: number  , destY: number) => {
-    const { updateActorCoords, actors } = ActorStore;
+    const { updateActor, actors } = ActorStore;
     const { pathfindingGrid, addLogMessage } = GameStore;
 
     // if (actorTick > 1) {
@@ -37,7 +37,7 @@ export const tryMoveActor = (destX: number  , destY: number) => {
                     addLogMessage(`${actor.race} bumps into you.`);
                     return;
                 }
-                updateActorCoords(actor.id, path[1][0], path[1][1]);
+                updateActor(actor.id, { xCoord: path[1][0], yCoord: path[1][1] });
             } else {
                 return;
             }

@@ -9,6 +9,8 @@ export interface Actor {
     yCoord: number;
     charColor: string;
     behaviour: string;
+    destinationX: number;
+    destinationY: number;
 }
 
 class ActorStore {
@@ -22,10 +24,10 @@ class ActorStore {
         this.actors.push(actor);
     };
 
-    updateActorCoords = (id: number | null, x: number, y: number) => {
+    updateActor = (id: number | null, updates: Partial<Actor>) => {
         const updatedActors = this.actors.map((actor) => {
             if (actor.id === id) {
-                return { ...actor, xCoord: x, yCoord: y };
+                return { ...actor, ...updates };
             }
             return actor;
         });

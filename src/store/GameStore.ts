@@ -16,6 +16,7 @@ class GameStore {
     worldMap: TileType[] = [];
     pathfindingGrid: any;
     currentLevel: number = 0;
+    debugMode: boolean = true;
 
     constructor() {
         makeAutoObservable(this);
@@ -40,7 +41,7 @@ class GameStore {
 
     setTileVisible = (index: number, visible: boolean) => {
         if (index >= 0 && index < this.worldMap.length) {
-            this.worldMap[index].visible = visible;
+            this.worldMap[index].visible = this.debugMode === true ? true : visible;
         }
     };
 

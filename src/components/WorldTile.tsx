@@ -63,12 +63,14 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
     let renderActor: Actor = {
         id: null,
         race: "",
-        hitpoints: -1,
         char: "",
-        xCoord: -1,
-        yCoord: -1,
+        hitpoints: 0,
+        xCoord: 0,
+        yCoord: 0,
         charColor: "",
         behaviour: "",
+        destinationX: 0,
+        destinationY: 0
     };
 
     actors.forEach((actor) => {
