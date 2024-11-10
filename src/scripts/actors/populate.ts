@@ -1,14 +1,14 @@
 import ActorStore, { Actor } from "../../store/ActorStore";
 import { randomNumber } from "../../utils/utils";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
-import { NPC} from "./actorTypes"; // Importing the warrior actor type
+import { NPC } from "./actorTypes"; // Importing the warrior actor type
 
 export const populate = () => {
     const { addActor, clearActors } = ActorStore;
     // Clear existing actors
     clearActors();
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
         const actor: Actor = {
             ...NPC,
             id: i,
@@ -20,7 +20,7 @@ export const populate = () => {
             charColor: NPC.charColor || "white",
             behaviour: NPC.behaviour || "wander",
             destinationX: 0,
-            destinationY: 0
+            destinationY: 0,
         };
 
         addActor(actor);

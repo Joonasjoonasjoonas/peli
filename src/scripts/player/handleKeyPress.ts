@@ -8,15 +8,35 @@ import PlayerStore from "../../store/PlayerStore";
 import { getIndexFromXY } from "../../utils/utils";
 import { playActors } from "../actors/actorBehaviour";
 
-export const movementKeys = ["w", "a", "x", "d", "q", "e", "z", "c", 
-    "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight",
-    "Home", "PageUp", "End", "PageDown",
-    "8", "4", "2", "6",
-    "7", "9", "1", "3"
+export const movementKeys = [
+    "w",
+    "a",
+    "x",
+    "d",
+    "q",
+    "e",
+    "z",
+    "c",
+    "ArrowUp",
+    "ArrowLeft",
+    "ArrowDown",
+    "ArrowRight",
+    "Home",
+    "PageUp",
+    "End",
+    "PageDown",
+    "8",
+    "4",
+    "2",
+    "6",
+    "7",
+    "9",
+    "1",
+    "3",
 ];
-type MapType = 'tunnels' | 'forest' | 'cave';
+type MapType = "tunnels" | "forest" | "cave";
 
-export const generateNewWorld = (mapType: MapType = 'forest') => {
+export const generateNewWorld = (mapType: MapType = "forest") => {
     createWorldMap(mapType);
     populate();
     updatePlayerFOV();
@@ -29,19 +49,26 @@ const generateAndSetMap = (
     setTurn?: (fn: (prev: number) => number) => void
 ) => {
     const newMap = generateNewWorld(mapType);
-    setCurrentWorldMap?.(prevMap => newMap.map(tile => ({ ...tile, visible: true })));
-    setTurn?.(prev => 0);
+    setCurrentWorldMap?.((prevMap) =>
+        newMap.map((tile) => ({ ...tile, visible: true }))
+    );
+    setTurn?.((prev) => 0);
 };
 
 export const handleKeyPress = (
     key: string,
-    setTurn?: (fn: (prev: number) => number) => void, 
+    setTurn?: (fn: (prev: number) => number) => void,
     setCurrentWorldMap?: (fn: (prev: any[]) => any[]) => void,
     currentMapType?: MapType
 ) => {
     const { addCompleteLogMessage, addLogMessage } = GameStore;
 
-    if (key === '?') {
+    if (key === "+") {
+        GameStore.toggleDebugVisibility();
+        return;
+    }
+
+    if (key === "?") {
         let totalSize = 0;
         for (let key in localStorage) {
             if (localStorage.hasOwnProperty(key)) {
@@ -49,25 +76,31 @@ export const handleKeyPress = (
                 totalSize += itemSize;
             }
         }
-        console.log(`Total localStorage size: ${totalSize} bytes (${(totalSize / 1024).toFixed(2)} KB)`);
+        console.log(
+            `Total localStorage size: ${totalSize} bytes (${(
+                totalSize / 1024
+            ).toFixed(2)} KB)`
+        );
         return;
     }
 
-    if (key === '>') {
+    if (key === ">") {
         const { playerCoords } = PlayerStore;
-        const currentTile = GameStore.worldMap[getIndexFromXY(playerCoords.x, playerCoords.y)];
-        if (currentTile.type === 'stairsDown') {
-            GameStore.changeLevel('down');
+        const currentTile =
+            GameStore.worldMap[getIndexFromXY(playerCoords.x, playerCoords.y)];
+        if (currentTile.type === "stairsDown") {
+            GameStore.changeLevel("down");
             addLogMessage("You descend deeper into the dungeon.");
             addCompleteLogMessage();
         }
     }
-    
-    if (key === '<') {
+
+    if (key === "<") {
         const { playerCoords } = PlayerStore;
-        const currentTile = GameStore.worldMap[getIndexFromXY(playerCoords.x, playerCoords.y)];
-        if (currentTile.type === 'stairsUp') {
-            GameStore.changeLevel('up');
+        const currentTile =
+            GameStore.worldMap[getIndexFromXY(playerCoords.x, playerCoords.y)];
+        if (currentTile.type === "stairsUp") {
+            GameStore.changeLevel("up");
             addLogMessage("You climb up the stairs.");
             addCompleteLogMessage();
         }
@@ -76,7 +109,7 @@ export const handleKeyPress = (
     // Handle movement
     if (movementKeys.includes(key)) {
         handleMovement(key);
-        setTurn?.(prev => prev + 1);
+        setTurn?.((prev) => prev + 1);
         checkForRandomEvent();
         addCompleteLogMessage();
         playActors();
@@ -85,43 +118,79 @@ export const handleKeyPress = (
 
     // Handle map generation/visibility commands
     const mapCommands: { [key: string]: MapType | undefined } = {
-        'F': 'forest',
-        'C': 'cave', 
-        'T': 'tunnels',
-        'M': currentMapType || 'forest'
+        F: "forest",
+        C: "cave",
+        T: "tunnels",
+        M: currentMapType || "forest",
     };
 
-    if (key.toLowerCase() === 'p') {
-        setCurrentWorldMap?.(prevMap => prevMap.map(tile => ({ ...tile, visible: true })));
+    if (key.toLowerCase() === "p") {
+        setCurrentWorldMap?.((prevMap) =>
+            prevMap.map((tile) => ({ ...tile, visible: true }))
+        );
     } else if (key in mapCommands) {
-        generateAndSetMap(mapCommands[key] as MapType, setCurrentWorldMap, setTurn);
+        generateAndSetMap(
+            mapCommands[key] as MapType,
+            setCurrentWorldMap,
+            setTurn
+        );
     }
 };
 
 const handleMovement = (key: string) => {
     const directions: Record<string, string> = {
-        w: "n", d: "e", x: "s", a: "w",
-        q: "nw", e: "ne", z: "sw", c: "se",
-        ArrowUp: "n", ArrowRight: "e", ArrowDown: "s", ArrowLeft: "w",
-        Home: "nw", PageUp: "ne", End: "sw", PageDown: "se",
-        "8": "n", "6": "e", "2": "s", "4": "w",
-        "7": "nw", "9": "ne", "1": "sw", "3": "se"
+        w: "n",
+        d: "e",
+        x: "s",
+        a: "w",
+        q: "nw",
+        e: "ne",
+        z: "sw",
+        c: "se",
+        ArrowUp: "n",
+        ArrowRight: "e",
+        ArrowDown: "s",
+        ArrowLeft: "w",
+        Home: "nw",
+        PageUp: "ne",
+        End: "sw",
+        PageDown: "se",
+        "8": "n",
+        "6": "e",
+        "2": "s",
+        "4": "w",
+        "7": "nw",
+        "9": "ne",
+        "1": "sw",
+        "3": "se",
     };
     if (directions[key]) tryMovePlayer(directions[key]);
 };
 
-export const handleKeyboardEvent = (event: KeyboardEvent, options: {
-    setTurn?: (fn: (prev: number) => number) => void,
-    setCurrentWorldMap?: (fn: (prev: any[]) => any[]) => void,
-    currentMapType?: MapType
-}) => {
+export const handleKeyboardEvent = (
+    event: KeyboardEvent,
+    options: {
+        setTurn?: (fn: (prev: number) => number) => void;
+        setCurrentWorldMap?: (fn: (prev: any[]) => any[]) => void;
+        currentMapType?: MapType;
+    }
+) => {
     if (event.repeat) return;
 
-    if (event.ctrlKey && ['s', 'l'].includes(event.key.toLowerCase())) {
+    if (event.ctrlKey && ["s", "l"].includes(event.key.toLowerCase())) {
         event.preventDefault();
-        handleKeyPress(`ctrl+${event.key.toLowerCase()}`, options.setTurn, options.setCurrentWorldMap);
+        handleKeyPress(
+            `ctrl+${event.key.toLowerCase()}`,
+            options.setTurn,
+            options.setCurrentWorldMap
+        );
         return;
     }
 
-    handleKeyPress(event.key, options.setTurn, options.setCurrentWorldMap, options.currentMapType);
+    handleKeyPress(
+        event.key,
+        options.setTurn,
+        options.setCurrentWorldMap,
+        options.currentMapType
+    );
 };
