@@ -5,9 +5,12 @@ import { generateCave } from "./caveGenerator";
 import { generateTunnels } from "./tunnelGenerator";
 import { generateForest } from "./forestGenerator";
 import { TileType, wall, floor } from "./tileTypes";
+import { Actor } from "../../store/ActorStore";
+import PlayerStore from "../../store/PlayerStore";
 
-const createPathfindingMap = (map: TileType[]) => {
+export const createPathfindingMap = (map: TileType[], actors?: Actor[]) => {
     const { addPathfindingGrid } = GameStore;
+    const { playerCoords } = PlayerStore;
 
     let pathfindingMap: any = [];
     let row: TileType[];
@@ -19,6 +22,22 @@ const createPathfindingMap = (map: TileType[]) => {
             else return 0;
         });
         pathfindingMap.push(convertedRow);
+    }
+
+    // Add player as blocking tile
+    if (playerCoords.x >= 0 && playerCoords.x < WORLD_WIDTH && 
+        playerCoords.y >= 0 && playerCoords.y < WORLD_HEIGHT) {
+        pathfindingMap[playerCoords.y][playerCoords.x] = 1;
+    }
+
+    // Add actors as blocking tiles
+    if (actors) {
+        actors.forEach(actor => {
+            if (actor.xCoord >= 0 && actor.xCoord < WORLD_WIDTH && 
+                actor.yCoord >= 0 && actor.yCoord < WORLD_HEIGHT) {
+                pathfindingMap[actor.yCoord][actor.xCoord] = 1;
+            }
+        });
     }
 
     addPathfindingGrid(pathfindingMap);

@@ -1,8 +1,8 @@
 import { toJS } from "mobx";
 import ActorStore, { Actor } from "../../store/ActorStore";
 import GameStore from "../../store/GameStore";
-
 import Pathfinding from "pathfinding";
+import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
 
 const PF = Pathfinding;
 
@@ -12,7 +12,7 @@ export const tryMoveActor = (
     destY: number
 ): boolean => {
     const { updateActor } = ActorStore;
-    const { pathfindingGrid, addLogMessage } = GameStore;
+    const { pathfindingGrid, addLogMessage, worldMap } = GameStore;
 
     const finder = new PF.AStarFinder({
         diagonalMovement: 1,
@@ -25,6 +25,31 @@ export const tryMoveActor = (
         destY,
         grid
     );
+
+    // If no path is found and actor is wandering, set new random destination
+    if (path.length === 0 && actor.behaviour === "wander") {
+        let newDestX, newDestY;
+        let attempts = 0;
+        const maxAttempts = 20;
+
+        do {
+            newDestX = Math.floor(Math.random() * (WORLD_WIDTH - 2)) + 1;
+            newDestY = Math.floor(Math.random() * (WORLD_HEIGHT - 2)) + 1;
+            attempts++;
+        } while (
+            worldMap[newDestY * WORLD_WIDTH + newDestX]?.blocking &&
+            attempts < maxAttempts
+        );
+
+        if (attempts < maxAttempts) {
+            updateActor(actor.id, {
+                destinationX: newDestX,
+                destinationY: newDestY,
+            });
+            addLogMessage(`${actor.race} changes direction`);
+        }
+        return false;
+    }
 
     // Only proceed if we have a path
     if (path.length > 1) {
