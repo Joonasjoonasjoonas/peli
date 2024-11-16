@@ -4,9 +4,11 @@ import { checkForRandomEvent } from "../world/randomEvents";
 import { updatePlayerFOV } from "./fov";
 import { createWorldMap } from "../world/mapCreator";
 import { populate } from "../actors/populate";
+import { populateItems } from "../items/items";
 import PlayerStore from "../../store/PlayerStore";
 import { getIndexFromXY } from "../../utils/utils";
 import { playActors } from "../actors/actorBehaviour";
+import ItemStore from "../../store/ItemStore";
 
 export const movementKeys = [
     "w",
@@ -39,6 +41,7 @@ type MapType = "tunnels" | "forest" | "cave";
 export const generateNewWorld = (mapType: MapType = "forest") => {
     createWorldMap(mapType);
     populate();
+    populateItems();
     updatePlayerFOV();
     return GameStore.worldMap;
 };
@@ -128,7 +131,46 @@ export const handleKeyPress = (
         setCurrentWorldMap?.((prevMap) =>
             prevMap.map((tile) => ({ ...tile, visible: true }))
         );
-    } else if (key in mapCommands) {
+    } 
+    
+    if (key === ",") {
+        const { playerCoords } = PlayerStore;
+        const { items } = ItemStore;
+        const { carriedItemId } = PlayerStore;
+    
+        if (carriedItemId === null) {
+            // Try to pick up item
+            const item = items.find(item => 
+                item.carriedBy === null && 
+                item.xCoord === playerCoords.x && 
+                item.yCoord === playerCoords.y
+            );
+            
+            if (item) {
+                ItemStore.updateItem(item.id!, {
+                    carriedBy: 0, // 0 for player
+                    xCoord: playerCoords.x,
+                    yCoord: playerCoords.y
+                });
+                PlayerStore.setCarriedItem(item.id!);
+                addLogMessage("You pick up the item.");
+            }
+        } else {
+            // Drop carried item
+            ItemStore.updateItem(carriedItemId, {
+                carriedBy: null,
+                xCoord: playerCoords.x,
+                yCoord: playerCoords.y
+            });
+            PlayerStore.setCarriedItem(null);
+            addLogMessage("You drop the item.");
+        }
+        addCompleteLogMessage();
+        return;
+    }
+    
+    
+    else if (key in mapCommands) {
         generateAndSetMap(
             mapCommands[key] as MapType,
             setCurrentWorldMap,

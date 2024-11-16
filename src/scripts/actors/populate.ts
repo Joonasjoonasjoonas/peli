@@ -1,6 +1,9 @@
 import ActorStore, { Actor } from "../../store/ActorStore";
-import { randomNumber } from "../../utils/utils";
+import GameStore from "../../store/GameStore";
+import ItemStore from "../../store/ItemStore";
+import { getIndexFromXY, randomNumber } from "../../utils/utils";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../game";
+import { BaseItem, BASIC_ITEM } from "../items/itemTypes";
 import { NPC } from "./actorTypes"; // Importing the warrior actor type
 
 export const populate = () => {
@@ -26,3 +29,6 @@ export const populate = () => {
         addActor(actor);
     }
 };
+
+
+

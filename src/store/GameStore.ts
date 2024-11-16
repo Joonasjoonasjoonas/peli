@@ -9,6 +9,7 @@ import { updatePlayerFOV } from "../scripts/player/fov";
 import ActorStore from "./ActorStore";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "../scripts/game";
 import { getIndexFromXY } from "../utils/utils";
+import { populateItems } from "../scripts/items/items";
 
 class GameStore {
     isDebugVisible: boolean = false;
@@ -124,6 +125,7 @@ class GameStore {
             this.currentLevel = newLevel;
             createWorldMap("tunnels");
             populate();
+            populateItems();
 
             // Position player at stairs up in new level
             const stairsUpCoords = this.findStairsCoords("stairsUp");

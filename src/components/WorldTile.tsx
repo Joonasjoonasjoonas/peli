@@ -4,6 +4,7 @@ import { TileType } from "../scripts/world/tileTypes";
 import ActorStore, { Actor } from "../store/ActorStore";
 import PlayerStore from "../store/PlayerStore";
 import { getIndexFromXY } from "../utils/utils";
+import ItemStore from "../store/ItemStore";
 
 const Tile = styled.div<{ tile: TileType; visible: boolean; explored: boolean }>`
     display: flex;
@@ -48,6 +49,16 @@ const Player = styled.div`
     height: 100%;
 `;
 
+const StyledItem = styled.div<{ color: string }>`
+    color: ${(p) => p.color};
+    z-index: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+`;
+
 interface Props {
     index: number;
     tile: TileType;
@@ -56,9 +67,15 @@ interface Props {
 const WorldTile: React.FC<Props> = ({ tile, index }) => {
     const { playerCoords } = PlayerStore;
     const { actors } = ActorStore;
+    const { items } = ItemStore;
 
     const renderPlayer =
         index === getIndexFromXY(playerCoords.x, playerCoords.y);
+
+        const renderItem = items.find(item => 
+            item.carriedBy === null && 
+            index === getIndexFromXY(item.xCoord, item.yCoord)
+        );
 
     let renderActor: Actor = {
         id: null,
@@ -84,7 +101,7 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
     return (
         <>
             <Tile tile={tile} visible={tile.visible} explored={tile.explored}>
-                {!renderPlayer && !renderActor.id && (
+                {!renderPlayer && !renderActor.id && !renderItem && (
                     <div>{tile.ascii}</div>
                 )}
                 {renderPlayer && <Player>@</Player>}
@@ -92,6 +109,11 @@ const WorldTile: React.FC<Props> = ({ tile, index }) => {
                     <StyledActor color={renderActor.charColor}>
                         {renderActor.char}
                     </StyledActor>
+                )}
+                {renderItem && (
+                    <StyledItem color={renderItem.color}>
+                        {renderItem.char}
+                    </StyledItem>
                 )}
             </Tile>
         </>

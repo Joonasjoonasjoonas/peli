@@ -4,6 +4,7 @@ import { WORLD_WIDTH, WORLD_HEIGHT } from "./scripts/game";
 import { getIndexFromXY } from "./utils/utils";
 import PlayerStore from "./store/PlayerStore";
 import ActorStore from "./store/ActorStore";
+import ItemStore from './store/ItemStore';
 
 interface Props {
   worldMap: TileType[];
@@ -80,6 +81,20 @@ const Canvas: React.FC<Props> = ({ worldMap }) => {
           ctx.textBaseline = 'middle';
           ctx.fillText(actor.char, actor.xCoord * tileWidth + tileWidth / 2, actor.yCoord * tileHeight + tileHeight / 2);
         }
+      });
+
+      // After drawing actors, add:
+      const { items } = ItemStore;
+      items.forEach(item => {
+          if (item.carriedBy === null) { // Only draw items on the ground
+              const tile = worldMap[getIndexFromXY(item.xCoord, item.yCoord)];
+              if (tile.visible) {
+                  ctx.fillStyle = item.color;
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillText(item.char, item.xCoord * tileWidth + tileWidth / 2, item.yCoord * tileHeight + tileHeight / 2);
+              }
+          }
       });
     };
 
