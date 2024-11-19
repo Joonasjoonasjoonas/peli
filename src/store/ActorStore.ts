@@ -9,7 +9,7 @@ export interface Actor {
     yCoord: number;
     charColor: string;
     behaviour: string;
-    destinationX: number;
+    destinationX: number ;
     destinationY: number;
 }
 

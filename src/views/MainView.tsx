@@ -27,10 +27,11 @@ const UIContainer = styled.div`
 const MainView = observer(() => {
     const [currentWorldMap, setCurrentWorldMap] = useState<TileType[]>([]);
     const [turn, setTurn] = useState(0);
-    const [currentMapType, setCurrentMapType] = useState<'tunnels' | 'forest' | 'cave'>('forest');
+    const { currentMapType, setCurrentMapType } = GameStore;
+  
     // const [modalOpen, setModalOpen] = useState(false);
 
-    const { playerIsCaught } = PlayerStore;
+  
 
     useEffect(() => {
         GameStore.clearAllLevels();
@@ -69,7 +70,7 @@ const MainView = observer(() => {
 
         window.addEventListener("keydown", keyPressHandler);
         return () => window.removeEventListener("keydown", keyPressHandler);
-    }, [turn, playerIsCaught, currentMapType]);
+    }, [turn, currentMapType]);
 
     return (
         <MainContainer>

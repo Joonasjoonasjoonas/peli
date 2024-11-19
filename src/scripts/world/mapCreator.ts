@@ -44,7 +44,8 @@ export const createPathfindingMap = (map: TileType[], actors?: Actor[]) => {
 };
 
 export const createWorldMap = (mapType: 'forest' | 'cave' | 'tunnels') => {
-    const { addWorldMap } = GameStore;
+    const { addWorldMap, setCurrentMapType } = GameStore;
+    setCurrentMapType(mapType);
     let map: TileType[];
 
     if (mapType === 'cave') {

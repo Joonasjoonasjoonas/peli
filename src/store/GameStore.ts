@@ -19,10 +19,16 @@ class GameStore {
     worldMap: TileType[] = [];
     pathfindingGrid: any;
     currentLevel: number = 0;
+    currentMapType: 'tunnels' | 'forest' | 'cave' = 'forest';
 
     constructor() {
         makeAutoObservable(this);
     }
+
+     // Add a setter for currentMapType
+     setCurrentMapType = (mapType: 'tunnels' | 'forest' | 'cave') => {
+        this.currentMapType = mapType;
+    };
 
     addLogMessage = (event: string) => {
         this.singleEvents.push(event + " ");
