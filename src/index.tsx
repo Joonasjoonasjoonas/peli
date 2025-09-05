@@ -1,10 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
+// import { HashRouter } from "react-router-dom"; // only if you actually use routes
+import "./fonts.css";   // <- define font first
+import "./index.css";   // <- then your main styles
 import App from "./App";
-import "./assets/fonts/dos.ttf";
 
-const root = ReactDOM.createRoot(
-    document.getElementById("root") as HTMLElement
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+root.render(
+  // <HashRouter> <App /> </HashRouter>   // use only if you really have routes
+  <App />
 );
-root.render(<App />);
