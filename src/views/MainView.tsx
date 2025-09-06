@@ -1,10 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
-import { EventPanel } from "../components/EventPanel";
-import { WorldMap } from "../components/WorldMap";
+import { GameView } from "../components/GameView";
 import GameStore from "../store/GameStore";
 import { TileType } from "../scripts/world/tileTypes";
-import { StatPanel } from "../components/StatPanel";
 import { generateNewWorld, handleKeyboardEvent } from "../scripts/player/handleKeyPress";
 // import ModalWindow from "../components/ModalWindow";
 import PlayerStore from "../store/PlayerStore";
@@ -20,9 +18,6 @@ const MainContainer = styled.div`
   box-sizing: border-box;
 `;
 
-const UIContainer = styled.div`
-  width: 100%;
-`;
 
 const MainView = observer(() => {
     const [currentWorldMap, setCurrentWorldMap] = useState<TileType[]>([]);
@@ -74,11 +69,11 @@ const MainView = observer(() => {
 
     return (
         <MainContainer>
-            <WorldMap worldMap={currentWorldMap} />
-            <UIContainer>
-                <StatPanel turn={turn} />
-                <EventPanel />
-            </UIContainer>
+            <GameView 
+                worldMap={currentWorldMap} 
+                turn={turn} 
+                logMessages={GameStore.completeLogMessages}
+            />
             {/* <ModalWindow
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
