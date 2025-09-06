@@ -6,6 +6,7 @@ import PlayerStore from "../store/PlayerStore";
 import ActorStore from "../store/ActorStore";
 import ItemStore from '../store/ItemStore';
 import tilesetImage from '../assets/LoBit Overworld sorted.png';
+import foliageTilesetImage from '../assets/LoBit Basic foliage.png';
 
 interface Props {
   worldMap: TileType[];
@@ -19,7 +20,9 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
   const [scaledDimensions, setScaledDimensions] = useState({ width: 0, height: 0, scale: 1 });
   const [fontsReady, setFontsReady] = useState(false);
   const [tilesetLoaded, setTilesetLoaded] = useState(false);
+  const [foliageTilesetLoaded, setFoliageTilesetLoaded] = useState(false);
   const tilesetRef = useRef<HTMLImageElement | null>(null);
+  const foliageTilesetRef = useRef<HTMLImageElement | null>(null);
   const [renderTrigger, setRenderTrigger] = useState(0); // For triggering re-renders during animation
   const cameraPositionRef = useRef({ x: 0, y: 0 }); // Current smooth camera position
   const targetCameraRef = useRef({ x: 0, y: 0 }); // Target camera position
@@ -39,9 +42,9 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
 
   useEffect(() => {
     const updateDimensions = () => {
-      // Base resolution: 854 × 480
-      const baseWidth = 854;
-      const baseHeight = 480;
+      // Base resolution: 427 × 240 (half of 854×480 for larger tiles/text)
+      const baseWidth = 427;
+      const baseHeight = 240;
       
       // Calculate integer scaling factor to fit screen
       const scaleX = Math.floor(window.innerWidth / baseWidth);
@@ -67,26 +70,39 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       setFontsReady(true);
     });
 
-    // Load tileset image
+    // Load main tileset image
     const tileset = new Image();
     tileset.onload = () => {
-      console.log('Tileset loaded successfully:', tileset.width, 'x', tileset.height);
+      console.log('Main tileset loaded successfully:', tileset.width, 'x', tileset.height);
       tilesetRef.current = tileset;
       setTilesetLoaded(true);
     };
     tileset.onerror = (error) => {
-      console.error('Failed to load tileset image:', error);
+      console.error('Failed to load main tileset image:', error);
       console.error('Attempted path:', tilesetImage);
     };
-    tileset.src = tilesetImage; // Use imported image
+    tileset.src = tilesetImage;
+
+    // Load foliage tileset image
+    const foliageTileset = new Image();
+    foliageTileset.onload = () => {
+      console.log('Foliage tileset loaded successfully:', foliageTileset.width, 'x', foliageTileset.height);
+      foliageTilesetRef.current = foliageTileset;
+      setFoliageTilesetLoaded(true);
+    };
+    foliageTileset.onerror = (error) => {
+      console.error('Failed to load foliage tileset image:', error);
+      console.error('Attempted path:', foliageTilesetImage);
+    };
+    foliageTileset.src = foliageTilesetImage;
   }, []);
 
   // Smooth camera animation system
   useEffect(() => {
-    if (!worldMap || worldMap.length === 0 || !fontsReady || !tilesetLoaded) return;
+    if (!worldMap || worldMap.length === 0 || !fontsReady || !tilesetLoaded || !foliageTilesetLoaded) return;
 
     const { playerCoords } = PlayerStore;
-    const gameHeight = dimensions.height - 120;
+    const gameHeight = dimensions.height - 66; // Updated to match main rendering
     const tileSize = 16;
     const tilesX = Math.floor(dimensions.width / tileSize);
     const tilesY = Math.floor(gameHeight / tileSize);
@@ -255,7 +271,7 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !fontsReady || !tilesetLoaded) return;
+    if (!canvas || !fontsReady || !tilesetLoaded || !foliageTilesetLoaded) return;
 
     const ctx = canvas.getContext('2d', { 
       alpha: false, // No transparency, better performance
@@ -286,8 +302,8 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
     canvas.width = scaledDimensions.width;
     canvas.height = scaledDimensions.height;
 
-    // With 854x480 base resolution, allocate space for UI panels
-    const uiPanelHeight = 120 * scaledDimensions.scale; // UI panels scaled
+    // With 427x240 base resolution, allocate space for UI panels
+    const uiPanelHeight = 66 * scaledDimensions.scale; // UI panels scaled (adjusted for balanced padding)
     const gameHeight = scaledDimensions.height - uiPanelHeight; // Game area scaled
     
     // Fixed 16x16 tile size, scaled up
@@ -314,8 +330,8 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       const screenX = worldX - currentCameraOffset.x;
       const screenY = worldY - currentCameraOffset.y;
       
-      // Don't draw if outside visible screen area
-      if (screenX < 0 || screenX >= tilesX || screenY < 0 || screenY >= tilesY) return;
+      // Don't draw if outside visible screen area (with 1-tile buffer for smooth scrolling)
+      if (screenX < -1 || screenX > tilesX + 1 || screenY < -1 || screenY > tilesY + 1) return;
       
       // Round to whole pixels to prevent gaps between tiles
       const pixelX = Math.round(offsetX + screenX * tileSize);
@@ -336,16 +352,30 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       
       switch (tileType) {
         case 'grass':
-          spriteX = 0; // First tile (0 * 16)
-          spriteY = 16; // Second row (1 * 16)
+          // Use foliage tileset - row 6, tiles 1-8 (deterministic based on position)
+          const grassVariant = ((worldX * 3 + worldY * 5) % 8) + 1; // Tiles 1-8
+          spriteX = (grassVariant - 1) * 16; // Convert to pixel position (0, 16, 32, 48, 64, 80, 96, 112)
+          spriteY = 5 * 16; // Row 6 (0-indexed = row 5, so 5 * 16 = 80)
           break;
         case 'soil':
-          spriteX = 160; // 11th tile (10 * 16)
-          spriteY = 0; // First row (0 * 16)
+          // Deterministic variant based on world position
+          if ((worldX + worldY) % 2 === 0) {
+            spriteX = 160; // 11th tile (10 * 16) - row 1
+            spriteY = 0; // First row (0 * 16)
+          } else {
+            spriteX = 192; // 13th tile (12 * 16) - row 1
+            spriteY = 0; // First row (0 * 16)
+          }
           break;
         case 'tree':
-          spriteX = 112; // 8th tile (7 * 16)
-          spriteY = 16; // Second row (1 * 16)
+          // Deterministic variant based on world position
+          if ((worldX * 7 + worldY * 11) % 2 === 0) {
+            spriteX = 112; // 8th tile (7 * 16) - row 2
+            spriteY = 16; // Second row (1 * 16)
+          } else {
+            spriteX = 128; // 9th tile (8 * 16) - row 1
+            spriteY = 0; // First row (0 * 16)
+          }
           break;
         case 'bush':
           spriteX = 80; // 6th tile (5 * 16)
@@ -389,10 +419,14 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       (ctx as any).mozImageSmoothingEnabled = false;
       (ctx as any).msImageSmoothingEnabled = false;
       
-      // Draw the sprite from tileset, scaling from 16x16 to current tile size
+      // Choose the correct tileset based on tile type
+      const currentTileset = tileType === 'grass' ? foliageTilesetRef.current : tileset;
+      if (!currentTileset) return;
+      
+      // Draw the sprite from appropriate tileset, scaling from 16x16 to current tile size
       ctx.drawImage(
-        tileset,
-        spriteX, spriteY, 16, 16, // Source: 16x16 from original tileset
+        currentTileset,
+        spriteX, spriteY, 16, 16, // Source: 16x16 from tileset
         pixelX, pixelY, tileSize, tileSize // Destination: scaled tile size
       );
       
@@ -494,8 +528,8 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
     };
 
     const drawStatPanel = () => {
-      const statPanelY = gameHeight + (5 * scaledDimensions.scale);
-      const statPanelHeight = 50 * scaledDimensions.scale; // Scaled height
+      const statPanelY = gameHeight + (2 * scaledDimensions.scale);
+      const statPanelHeight = 28 * scaledDimensions.scale; // Increased height for more bottom padding
       
       // Draw stat panel background
       ctx.fillStyle = '#353540';
@@ -506,17 +540,17 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       ctx.lineWidth = scaledDimensions.scale;
       ctx.strokeRect(5 * scaledDimensions.scale, statPanelY, scaledDimensions.width - (10 * scaledDimensions.scale), statPanelHeight);
       
-      // Draw stat text
+      // Draw stat text with more padding
       ctx.fillStyle = '#ede4da';
-      ctx.font = `${Math.round(baseFontSize * 0.8)}px Pixuf`; // Proportional to tile size
+      ctx.font = `${Math.round(baseFontSize * 0.6)}px Pixuf`; // Smaller, consistent font size
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      ctx.fillText(`Turn: ${turn}`, 10 * scaledDimensions.scale, statPanelY + (8 * scaledDimensions.scale));
+      ctx.fillText(`Turn: ${turn}`, 10 * scaledDimensions.scale, statPanelY + (5 * scaledDimensions.scale));
     };
 
     const drawEventPanel = () => {
-      const eventPanelY = gameHeight + (60 * scaledDimensions.scale); // Position right below stat panel
-      const eventPanelHeight = 55 * scaledDimensions.scale; // Scaled height
+      const eventPanelY = gameHeight + (32 * scaledDimensions.scale); // Moved down slightly for stat panel height increase
+      const eventPanelHeight = 32 * scaledDimensions.scale; // Slightly increased height for better balance
       
       // Draw event panel background
       ctx.fillStyle = '#353540';
@@ -527,8 +561,8 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       ctx.lineWidth = scaledDimensions.scale;
       ctx.strokeRect(5 * scaledDimensions.scale, eventPanelY, scaledDimensions.width - (10 * scaledDimensions.scale), eventPanelHeight);
       
-      // Draw log messages
-      ctx.font = `${Math.round(baseFontSize * 0.7)}px Pixuf`; // Proportional to tile size, smaller for logs
+      // Draw log messages with more padding
+      ctx.font = `${Math.round(baseFontSize * 0.6)}px Pixuf`; // Same font size as stat panel
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
       
@@ -541,7 +575,7 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
             ctx.fillStyle = textColors[index] || '#636167';
             // Join the messages for this turn into a single string
             const combinedMessage = messagesPerTurn.join(' ');
-            ctx.fillText(combinedMessage, 10 * scaledDimensions.scale, eventPanelY + (8 * scaledDimensions.scale) + (index * 15 * scaledDimensions.scale)); // Scaled spacing
+            ctx.fillText(combinedMessage, 10 * scaledDimensions.scale, eventPanelY + (4 * scaledDimensions.scale) + (index * 8 * scaledDimensions.scale)); // Slightly increased top padding
           }
         });
       }
