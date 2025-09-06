@@ -7,5 +7,22 @@
     font-display: swap;
   }
   
+  /* Pixel-perfect rendering */
+  * {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: crisp-edges;
+    font-smooth: never;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    text-rendering: geometricPrecision;
+  }
+  
   /* optional global usage */
-  html, body { font-family: "Pixuf", monospace; }
+  html, body { 
+    font-family: "Pixuf", "Courier New", "Consolas", "Monaco", monospace;
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+  }
