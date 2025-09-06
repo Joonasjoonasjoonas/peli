@@ -18,8 +18,8 @@ export const floor: TileType = {
     visible: false,
     explored: false,
     ascii: ".",
-    color: "#8B4513", // Brown color for floor
-    backgroundColor: "#000000", // Black background for floor
+    color: "#bdaa97", // Brown from palette for floor
+    backgroundColor: "#353540", // Dark background from palette
 };
 
 export const wall: TileType = {
@@ -28,8 +28,8 @@ export const wall: TileType = {
     visible: false,
     explored: false,
     ascii: "#",
-    color: "#808080", // Gray color for wall
-    backgroundColor: "#404040", // Dark gray background for wall
+    color: "#918d8d", // Gray from palette for wall
+    backgroundColor: "#353540", // Dark background from palette
 };
 
 export const empty: TileType = {
@@ -38,8 +38,8 @@ export const empty: TileType = {
     visible: false,
     explored: false,
     ascii: " ",
-    color: "#000000",
-    backgroundColor: "#000000", // Black background for empty
+    color: "#353540",
+    backgroundColor: "#353540", // Dark background from palette
 };
 
 export const bush: TileType = {
@@ -48,8 +48,8 @@ export const bush: TileType = {
     visible: false,
     explored: false,
     ascii: "\"",
-    color: "#008000", // Green color for bush
-    backgroundColor: "#000000", // Black background for bush
+    color: "#557d55", // Green from palette for bush
+    backgroundColor: "#353540", // Dark background from palette
     obscuring: true,
 };
 
@@ -59,8 +59,8 @@ export const grass: TileType = {
     visible: false,
     explored: false,
     ascii: ",",
-    color: "#008000", // Green color for grass
-    backgroundColor: "#000000", // Black background for grass
+    color: "#8b9150", // Green from palette for grass
+    backgroundColor: "#353540", // Dark background from palette
 };
 
 export const soil: TileType = {
@@ -69,8 +69,8 @@ export const soil: TileType = {
     visible: false,
     explored: false,
     ascii: ".",
-    color: "#008000", // Green color for soil
-    backgroundColor: "#000000", // Black background for soil
+    color: "#86735b", // Brown from palette for soil
+    backgroundColor: "#353540", // Dark background from palette
 };
 
 export const tree: TileType = {
@@ -79,8 +79,8 @@ export const tree: TileType = {
     visible: false,
     explored: false,
     ascii: "^",
-    color: "#00FF00", // Bright green color for tree
-    backgroundColor: "#000000", // Black background for tree
+    color: "#557d55", // Green from palette for tree
+    backgroundColor: "#353540", // Dark background from palette
 };
 
 export const stairsDown: TileType = {
@@ -89,8 +89,8 @@ export const stairsDown: TileType = {
     visible: false,
     explored: false,
     ascii: ">",
-    color: "#FFFFFF", // White color for stairs
-    backgroundColor: "#000000", // Black background for stairs
+    color: "#ede4da", // Light from palette for stairs
+    backgroundColor: "#353540", // Dark background from palette
 };
 
 export const stairsUp: TileType = {
@@ -99,6 +99,6 @@ export const stairsUp: TileType = {
     visible: false,
     explored: false,
     ascii: "<",
-    color: "#FFFFFF", // White color for stairs
-    backgroundColor: "#000000", // Black background for stairs
+    color: "#ede4da", // Light from palette for stairs
+    backgroundColor: "#353540", // Dark background from palette
 };

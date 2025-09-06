@@ -266,22 +266,23 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
     ctxAny.textRenderingOptimization = 'optimizeSpeed';
     ctxAny.textBaseline = 'top';
 
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
+    // Set canvas internal resolution to match display size (no CSS scaling needed)
+    canvas.width = scaledDimensions.width;
+    canvas.height = scaledDimensions.height;
 
-    // With 854x480 resolution, allocate space for UI panels
-    const uiPanelHeight = 120; // UI panels take 120px of the 480px total height
-    const gameHeight = dimensions.height - uiPanelHeight; // Game area is 360px (480-120)
+    // With 854x480 base resolution, allocate space for UI panels
+    const uiPanelHeight = 120 * scaledDimensions.scale; // UI panels scaled
+    const gameHeight = scaledDimensions.height - uiPanelHeight; // Game area scaled
     
-    // Fixed 16x16 tile size
-    const tileSize = 16;
-    const tilesX = Math.floor(dimensions.width / tileSize);
+    // Fixed 16x16 tile size, scaled up
+    const tileSize = 16 * scaledDimensions.scale;
+    const tilesX = Math.floor(scaledDimensions.width / tileSize);
     const tilesY = Math.floor(gameHeight / tileSize);
     
     // Center the game area if there's extra space
     const gameAreaWidth = tilesX * tileSize;
     const gameAreaHeight = tilesY * tileSize;
-    const offsetX = (dimensions.width - gameAreaWidth) / 2;
+    const offsetX = (scaledDimensions.width - gameAreaWidth) / 2;
     const offsetY = (gameHeight - gameAreaHeight) / 2;
 
     const render = () => {
@@ -315,90 +316,97 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       
       switch (tileType) {
         case 'floor':
-          ctx.fillStyle = visible ? '#8B4513' : '#2D1B0A';
+          ctx.fillStyle = visible ? '#bdaa97' : '#604b3d';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Add some texture dots
-          ctx.fillStyle = visible ? '#A0522D' : '#3D2B1A';
+          // Add some texture dots (scaled)
+          ctx.fillStyle = visible ? '#d4c2b6' : '#735b42';
           for (let i = 0; i < 3; i++) {
-            ctx.fillRect(pixelX + 2 + i * 5, pixelY + 8, 1, 1);
+            ctx.fillRect(pixelX + (2 + i * 5) * scaledDimensions.scale, pixelY + 8 * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
           }
           break;
           
         case 'wall':
-          ctx.fillStyle = visible ? '#808080' : '#404040';
+          ctx.fillStyle = visible ? '#918d8d' : '#353540';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Add brick pattern
-          ctx.fillStyle = visible ? '#606060' : '#303030';
+          // Add brick pattern (scaled)
+          ctx.fillStyle = visible ? '#636167' : '#4d3f38';
           for (let i = 0; i < 2; i++) {
-            ctx.fillRect(pixelX, pixelY + i * 8, tileSize, 1);
-            ctx.fillRect(pixelX + 8, pixelY + 4 + i * 8, tileSize - 8, 1);
+            ctx.fillRect(pixelX, pixelY + i * 8 * scaledDimensions.scale, tileSize, scaledDimensions.scale);
+            ctx.fillRect(pixelX + 8 * scaledDimensions.scale, pixelY + (4 + i * 8) * scaledDimensions.scale, tileSize - 8 * scaledDimensions.scale, scaledDimensions.scale);
           }
           break;
           
         case 'grass':
-          ctx.fillStyle = visible ? '#228B22' : '#114411';
+          ctx.fillStyle = visible ? '#8b9150' : '#446350';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Add grass blades
-          ctx.fillStyle = visible ? '#32CD32' : '#196619';
-          for (let i = 0; i < 4; i++) {
-            ctx.fillRect(pixelX + 2 + i * 3, pixelY + 12, 1, 4);
-          }
+          // Add more natural grass pattern (scaled)
+          ctx.fillStyle = visible ? '#bda351' : '#557d55';
+          // Scattered grass blades of varying heights
+          ctx.fillRect(pixelX + 2 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, scaledDimensions.scale, 6 * scaledDimensions.scale);
+          ctx.fillRect(pixelX + 5 * scaledDimensions.scale, pixelY + 12 * scaledDimensions.scale, scaledDimensions.scale, 4 * scaledDimensions.scale);
+          ctx.fillRect(pixelX + 8 * scaledDimensions.scale, pixelY + 9 * scaledDimensions.scale, scaledDimensions.scale, 7 * scaledDimensions.scale);
+          ctx.fillRect(pixelX + 11 * scaledDimensions.scale, pixelY + 11 * scaledDimensions.scale, scaledDimensions.scale, 5 * scaledDimensions.scale);
+          ctx.fillRect(pixelX + 14 * scaledDimensions.scale, pixelY + 13 * scaledDimensions.scale, scaledDimensions.scale, 3 * scaledDimensions.scale);
+          // Add some darker grass for depth
+          ctx.fillStyle = visible ? '#8b9150' : '#3e554c';
+          ctx.fillRect(pixelX + 4 * scaledDimensions.scale, pixelY + 14 * scaledDimensions.scale, scaledDimensions.scale, 2 * scaledDimensions.scale);
+          ctx.fillRect(pixelX + 9 * scaledDimensions.scale, pixelY + 13 * scaledDimensions.scale, scaledDimensions.scale, 3 * scaledDimensions.scale);
           break;
           
         case 'tree':
-          ctx.fillStyle = visible ? '#228B22' : '#114411';
+          ctx.fillStyle = visible ? '#8b9150' : '#446350';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Tree trunk
-          ctx.fillStyle = visible ? '#8B4513' : '#452209';
-          ctx.fillRect(pixelX + 6, pixelY + 10, 4, 6);
-          // Tree crown
-          ctx.fillStyle = visible ? '#00FF00' : '#008000';
-          ctx.fillRect(pixelX + 4, pixelY + 4, 8, 8);
+          // Tree trunk (scaled)
+          ctx.fillStyle = visible ? '#86735b' : '#604b3d';
+          ctx.fillRect(pixelX + 6 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, 4 * scaledDimensions.scale, 6 * scaledDimensions.scale);
+          // Tree crown (scaled)
+          ctx.fillStyle = visible ? '#557d55' : '#3e554c';
+          ctx.fillRect(pixelX + 4 * scaledDimensions.scale, pixelY + 4 * scaledDimensions.scale, 8 * scaledDimensions.scale, 8 * scaledDimensions.scale);
           break;
           
         case 'bush':
-          ctx.fillStyle = visible ? '#228B22' : '#114411';
+          ctx.fillStyle = visible ? '#8b9150' : '#446350';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Bush shape
-          ctx.fillStyle = visible ? '#006400' : '#003200';
-          ctx.fillRect(pixelX + 3, pixelY + 8, 10, 6);
-          ctx.fillRect(pixelX + 5, pixelY + 6, 6, 4);
+          // Bush shape (scaled)
+          ctx.fillStyle = visible ? '#557d55' : '#3e554c';
+          ctx.fillRect(pixelX + 3 * scaledDimensions.scale, pixelY + 8 * scaledDimensions.scale, 10 * scaledDimensions.scale, 6 * scaledDimensions.scale);
+          ctx.fillRect(pixelX + 5 * scaledDimensions.scale, pixelY + 6 * scaledDimensions.scale, 6 * scaledDimensions.scale, 4 * scaledDimensions.scale);
           break;
           
         case 'soil':
-          ctx.fillStyle = visible ? '#8B4513' : '#452209';
+          ctx.fillStyle = visible ? '#86735b' : '#604b3d';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Soil texture
-          ctx.fillStyle = visible ? '#A0522D' : '#502916';
+          // Soil texture (scaled)
+          ctx.fillStyle = visible ? '#bdaa97' : '#735b42';
           for (let i = 0; i < 8; i++) {
-            ctx.fillRect(pixelX + (i % 4) * 4 + 1, pixelY + Math.floor(i / 4) * 8 + 3, 2, 2);
+            ctx.fillRect(pixelX + ((i % 4) * 4 + 1) * scaledDimensions.scale, pixelY + (Math.floor(i / 4) * 8 + 3) * scaledDimensions.scale, 2 * scaledDimensions.scale, 2 * scaledDimensions.scale);
           }
           break;
           
         case 'stairsDown':
-          ctx.fillStyle = visible ? '#8B4513' : '#452209';
+          ctx.fillStyle = visible ? '#bdaa97' : '#604b3d';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Stairs going down (>)
-          ctx.fillStyle = visible ? '#FFFFFF' : '#808080';
+          // Stairs going down (>) (scaled)
+          ctx.fillStyle = visible ? '#ede4da' : '#bfb8b4';
           for (let i = 0; i < 8; i++) {
-            ctx.fillRect(pixelX + 4 + i, pixelY + 4 + i, 1, 1);
-            ctx.fillRect(pixelX + 4 + i, pixelY + 12 - i, 1, 1);
+            ctx.fillRect(pixelX + (4 + i) * scaledDimensions.scale, pixelY + (4 + i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
+            ctx.fillRect(pixelX + (4 + i) * scaledDimensions.scale, pixelY + (12 - i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
           }
           break;
           
         case 'stairsUp':
-          ctx.fillStyle = visible ? '#8B4513' : '#452209';
+          ctx.fillStyle = visible ? '#bdaa97' : '#604b3d';
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Stairs going up (<)
-          ctx.fillStyle = visible ? '#FFFFFF' : '#808080';
+          // Stairs going up (<) (scaled)
+          ctx.fillStyle = visible ? '#ede4da' : '#bfb8b4';
           for (let i = 0; i < 8; i++) {
-            ctx.fillRect(pixelX + 12 - i, pixelY + 4 + i, 1, 1);
-            ctx.fillRect(pixelX + 12 - i, pixelY + 12 - i, 1, 1);
+            ctx.fillRect(pixelX + (12 - i) * scaledDimensions.scale, pixelY + (4 + i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
+            ctx.fillRect(pixelX + (12 - i) * scaledDimensions.scale, pixelY + (12 - i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
           }
           break;
           
         default:
-          ctx.fillStyle = '#FF00FF'; // Magenta for unknown tiles
+          ctx.fillStyle = '#a94949'; // Red from palette for unknown tiles
           ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
       }
     };
@@ -431,12 +439,12 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
         const pixelX = Math.round(offsetX + playerScreenX * tileSize);
         const pixelY = Math.round(offsetY + playerScreenY * tileSize);
         
-        // Player sprite (simple @ character as 16x16 pixels)
-        ctx.fillStyle = '#FFFF00'; // Yellow player
-        ctx.fillRect(pixelX + 4, pixelY + 2, 8, 6); // Head
-        ctx.fillRect(pixelX + 6, pixelY + 8, 4, 8); // Body
-        ctx.fillRect(pixelX + 3, pixelY + 10, 3, 6); // Left arm
-        ctx.fillRect(pixelX + 10, pixelY + 10, 3, 6); // Right arm
+        // Player sprite (simple @ character as 16x16 pixels, scaled)
+        ctx.fillStyle = '#e8c65b'; // Yellow from palette for player
+        ctx.fillRect(pixelX + 4 * scaledDimensions.scale, pixelY + 2 * scaledDimensions.scale, 8 * scaledDimensions.scale, 6 * scaledDimensions.scale); // Head
+        ctx.fillRect(pixelX + 6 * scaledDimensions.scale, pixelY + 8 * scaledDimensions.scale, 4 * scaledDimensions.scale, 8 * scaledDimensions.scale); // Body
+        ctx.fillRect(pixelX + 3 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, 3 * scaledDimensions.scale, 6 * scaledDimensions.scale); // Left arm
+        ctx.fillRect(pixelX + 10 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, 3 * scaledDimensions.scale, 6 * scaledDimensions.scale); // Right arm
       }
 
       // Draw actors using animated positions
@@ -460,12 +468,12 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
               const pixelX = Math.round(offsetX + actorScreenX * tileSize);
               const pixelY = Math.round(offsetY + actorScreenY * tileSize);
               
-              // Simple actor sprite
+              // Simple actor sprite (scaled)
               ctx.fillStyle = actor.charColor;
-              ctx.fillRect(pixelX + 5, pixelY + 3, 6, 5); // Head
-              ctx.fillRect(pixelX + 6, pixelY + 8, 4, 6); // Body
-              ctx.fillRect(pixelX + 4, pixelY + 10, 2, 4); // Left leg
-              ctx.fillRect(pixelX + 10, pixelY + 10, 2, 4); // Right leg
+              ctx.fillRect(pixelX + 5 * scaledDimensions.scale, pixelY + 3 * scaledDimensions.scale, 6 * scaledDimensions.scale, 5 * scaledDimensions.scale); // Head
+              ctx.fillRect(pixelX + 6 * scaledDimensions.scale, pixelY + 8 * scaledDimensions.scale, 4 * scaledDimensions.scale, 6 * scaledDimensions.scale); // Body
+              ctx.fillRect(pixelX + 4 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, 2 * scaledDimensions.scale, 4 * scaledDimensions.scale); // Left leg
+              ctx.fillRect(pixelX + 10 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, 2 * scaledDimensions.scale, 4 * scaledDimensions.scale); // Right leg
             }
           }
         });
@@ -486,9 +494,9 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
                         const pixelX = Math.round(offsetX + itemScreenX * tileSize);
                         const pixelY = Math.round(offsetY + itemScreenY * tileSize);
                         
-                        // Simple item sprite (small square)
+                        // Simple item sprite (small square, scaled)
                         ctx.fillStyle = item.color;
-                        ctx.fillRect(pixelX + 6, pixelY + 10, 4, 4);
+                        ctx.fillRect(pixelX + 6 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, 4 * scaledDimensions.scale, 4 * scaledDimensions.scale);
                     }
                 }
             }
@@ -497,38 +505,38 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
     };
 
     const drawStatPanel = () => {
-      const statPanelY = gameHeight + 5;
-      const statPanelHeight = 50; // Reduced height for fixed resolution
+      const statPanelY = gameHeight + (5 * scaledDimensions.scale);
+      const statPanelHeight = 50 * scaledDimensions.scale; // Scaled height
       
       // Draw stat panel background
-      ctx.fillStyle = 'black';
-      ctx.fillRect(5, statPanelY, dimensions.width - 10, statPanelHeight);
+      ctx.fillStyle = '#353540';
+      ctx.fillRect(5 * scaledDimensions.scale, statPanelY, scaledDimensions.width - (10 * scaledDimensions.scale), statPanelHeight);
       
       // Draw stat panel border
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(5, statPanelY, dimensions.width - 10, statPanelHeight);
+      ctx.strokeStyle = '#bfb8b4';
+      ctx.lineWidth = scaledDimensions.scale;
+      ctx.strokeRect(5 * scaledDimensions.scale, statPanelY, scaledDimensions.width - (10 * scaledDimensions.scale), statPanelHeight);
       
       // Draw stat text
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = '#ede4da';
       ctx.font = `${Math.round(baseFontSize * 0.8)}px Pixuf`; // Proportional to tile size
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      ctx.fillText(`Turn: ${turn}`, 10, statPanelY + 8);
+      ctx.fillText(`Turn: ${turn}`, 10 * scaledDimensions.scale, statPanelY + (8 * scaledDimensions.scale));
     };
 
     const drawEventPanel = () => {
-      const eventPanelY = gameHeight + 60; // Position right below stat panel
-      const eventPanelHeight = 55; // Reduced height for fixed resolution
+      const eventPanelY = gameHeight + (60 * scaledDimensions.scale); // Position right below stat panel
+      const eventPanelHeight = 55 * scaledDimensions.scale; // Scaled height
       
       // Draw event panel background
-      ctx.fillStyle = 'black';
-      ctx.fillRect(5, eventPanelY, dimensions.width - 10, eventPanelHeight);
+      ctx.fillStyle = '#353540';
+      ctx.fillRect(5 * scaledDimensions.scale, eventPanelY, scaledDimensions.width - (10 * scaledDimensions.scale), eventPanelHeight);
       
       // Draw event panel border
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(5, eventPanelY, dimensions.width - 10, eventPanelHeight);
+      ctx.strokeStyle = '#bfb8b4';
+      ctx.lineWidth = scaledDimensions.scale;
+      ctx.strokeRect(5 * scaledDimensions.scale, eventPanelY, scaledDimensions.width - (10 * scaledDimensions.scale), eventPanelHeight);
       
       // Draw log messages
       ctx.font = `${Math.round(baseFontSize * 0.7)}px Pixuf`; // Proportional to tile size, smaller for logs
@@ -539,19 +547,19 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       if (logMessages && logMessages.length > 0) {
         logMessages.slice(0, 3).forEach((messagesPerTurn, index) => { // Reduced to 3 messages
           if (messagesPerTurn && Array.isArray(messagesPerTurn)) {
-            const opacity = index === 0 ? 1 : (3 - index) / 3;
-            const gray = Math.floor(255 * opacity);
-            ctx.fillStyle = index === 0 ? 'white' : `rgb(${gray}, ${gray}, ${gray})`;
+            // Use palette colors for text fading
+            const textColors = ['#ede4da', '#bfb8b4', '#918d8d'];
+            ctx.fillStyle = textColors[index] || '#636167';
             // Join the messages for this turn into a single string
             const combinedMessage = messagesPerTurn.join(' ');
-            ctx.fillText(combinedMessage, 10, eventPanelY + 8 + (index * 15)); // Tighter line spacing
+            ctx.fillText(combinedMessage, 10 * scaledDimensions.scale, eventPanelY + (8 * scaledDimensions.scale) + (index * 15 * scaledDimensions.scale)); // Scaled spacing
           }
         });
       }
     };
 
       // Clear canvas
-      ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+      ctx.clearRect(0, 0, scaledDimensions.width, scaledDimensions.height);
       
       // Draw everything
       drawMap();
@@ -585,8 +593,6 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
       <canvas 
         ref={canvasRef} 
         style={{ 
-          width: `${scaledDimensions.width}px`,
-          height: `${scaledDimensions.height}px`,
           imageRendering: 'pixelated',
           filter: 'none',
           transform: 'translateZ(0)',
