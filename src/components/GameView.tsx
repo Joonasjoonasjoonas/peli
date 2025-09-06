@@ -5,6 +5,7 @@ import { getIndexFromXY } from "../utils/utils";
 import PlayerStore from "../store/PlayerStore";
 import ActorStore from "../store/ActorStore";
 import ItemStore from '../store/ItemStore';
+import tilesetImage from '../assets/LoBit Overworld sorted.png';
 
 interface Props {
   worldMap: TileType[];
@@ -17,6 +18,8 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [scaledDimensions, setScaledDimensions] = useState({ width: 0, height: 0, scale: 1 });
   const [fontsReady, setFontsReady] = useState(false);
+  const [tilesetLoaded, setTilesetLoaded] = useState(false);
+  const tilesetRef = useRef<HTMLImageElement | null>(null);
   const [renderTrigger, setRenderTrigger] = useState(0); // For triggering re-renders during animation
   const cameraPositionRef = useRef({ x: 0, y: 0 }); // Current smooth camera position
   const targetCameraRef = useRef({ x: 0, y: 0 }); // Target camera position
@@ -63,11 +66,24 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
     document.fonts.ready.then(() => {
       setFontsReady(true);
     });
+
+    // Load tileset image
+    const tileset = new Image();
+    tileset.onload = () => {
+      console.log('Tileset loaded successfully:', tileset.width, 'x', tileset.height);
+      tilesetRef.current = tileset;
+      setTilesetLoaded(true);
+    };
+    tileset.onerror = (error) => {
+      console.error('Failed to load tileset image:', error);
+      console.error('Attempted path:', tilesetImage);
+    };
+    tileset.src = tilesetImage; // Use imported image
   }, []);
 
   // Smooth camera animation system
   useEffect(() => {
-    if (!worldMap || worldMap.length === 0 || !fontsReady) return;
+    if (!worldMap || worldMap.length === 0 || !fontsReady || !tilesetLoaded) return;
 
     const { playerCoords } = PlayerStore;
     const gameHeight = dimensions.height - 120;
@@ -239,7 +255,7 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !fontsReady) return;
+    if (!canvas || !fontsReady || !tilesetLoaded) return;
 
     const ctx = canvas.getContext('2d', { 
       alpha: false, // No transparency, better performance
@@ -312,103 +328,76 @@ export const GameView: React.FC<Props> = ({ worldMap, turn, logMessages }) => {
         return;
       }
       
-      const alpha = visible ? 1.0 : 0.5; // Dim explored but not visible tiles
+      const tileset = tilesetRef.current;
+      if (!tileset) return;
+      
+      // Get sprite coordinates from tileset (20 tiles wide, 16px each)
+      let spriteX = 0, spriteY = 0;
       
       switch (tileType) {
-        case 'floor':
-          ctx.fillStyle = visible ? '#bdaa97' : '#604b3d';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Add some texture dots (scaled)
-          ctx.fillStyle = visible ? '#d4c2b6' : '#735b42';
-          for (let i = 0; i < 3; i++) {
-            ctx.fillRect(pixelX + (2 + i * 5) * scaledDimensions.scale, pixelY + 8 * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
-          }
-          break;
-          
-        case 'wall':
-          ctx.fillStyle = visible ? '#918d8d' : '#353540';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Add brick pattern (scaled)
-          ctx.fillStyle = visible ? '#636167' : '#4d3f38';
-          for (let i = 0; i < 2; i++) {
-            ctx.fillRect(pixelX, pixelY + i * 8 * scaledDimensions.scale, tileSize, scaledDimensions.scale);
-            ctx.fillRect(pixelX + 8 * scaledDimensions.scale, pixelY + (4 + i * 8) * scaledDimensions.scale, tileSize - 8 * scaledDimensions.scale, scaledDimensions.scale);
-          }
-          break;
-          
         case 'grass':
-          ctx.fillStyle = visible ? '#8b9150' : '#446350';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Add more natural grass pattern (scaled)
-          ctx.fillStyle = visible ? '#bda351' : '#557d55';
-          // Scattered grass blades of varying heights
-          ctx.fillRect(pixelX + 2 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, scaledDimensions.scale, 6 * scaledDimensions.scale);
-          ctx.fillRect(pixelX + 5 * scaledDimensions.scale, pixelY + 12 * scaledDimensions.scale, scaledDimensions.scale, 4 * scaledDimensions.scale);
-          ctx.fillRect(pixelX + 8 * scaledDimensions.scale, pixelY + 9 * scaledDimensions.scale, scaledDimensions.scale, 7 * scaledDimensions.scale);
-          ctx.fillRect(pixelX + 11 * scaledDimensions.scale, pixelY + 11 * scaledDimensions.scale, scaledDimensions.scale, 5 * scaledDimensions.scale);
-          ctx.fillRect(pixelX + 14 * scaledDimensions.scale, pixelY + 13 * scaledDimensions.scale, scaledDimensions.scale, 3 * scaledDimensions.scale);
-          // Add some darker grass for depth
-          ctx.fillStyle = visible ? '#8b9150' : '#3e554c';
-          ctx.fillRect(pixelX + 4 * scaledDimensions.scale, pixelY + 14 * scaledDimensions.scale, scaledDimensions.scale, 2 * scaledDimensions.scale);
-          ctx.fillRect(pixelX + 9 * scaledDimensions.scale, pixelY + 13 * scaledDimensions.scale, scaledDimensions.scale, 3 * scaledDimensions.scale);
+          spriteX = 0; // First tile (0 * 16)
+          spriteY = 16; // Second row (1 * 16)
           break;
-          
-        case 'tree':
-          ctx.fillStyle = visible ? '#8b9150' : '#446350';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Tree trunk (scaled)
-          ctx.fillStyle = visible ? '#86735b' : '#604b3d';
-          ctx.fillRect(pixelX + 6 * scaledDimensions.scale, pixelY + 10 * scaledDimensions.scale, 4 * scaledDimensions.scale, 6 * scaledDimensions.scale);
-          // Tree crown (scaled)
-          ctx.fillStyle = visible ? '#557d55' : '#3e554c';
-          ctx.fillRect(pixelX + 4 * scaledDimensions.scale, pixelY + 4 * scaledDimensions.scale, 8 * scaledDimensions.scale, 8 * scaledDimensions.scale);
-          break;
-          
-        case 'bush':
-          ctx.fillStyle = visible ? '#8b9150' : '#446350';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Bush shape (scaled)
-          ctx.fillStyle = visible ? '#557d55' : '#3e554c';
-          ctx.fillRect(pixelX + 3 * scaledDimensions.scale, pixelY + 8 * scaledDimensions.scale, 10 * scaledDimensions.scale, 6 * scaledDimensions.scale);
-          ctx.fillRect(pixelX + 5 * scaledDimensions.scale, pixelY + 6 * scaledDimensions.scale, 6 * scaledDimensions.scale, 4 * scaledDimensions.scale);
-          break;
-          
         case 'soil':
-          ctx.fillStyle = visible ? '#86735b' : '#604b3d';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Soil texture (scaled)
-          ctx.fillStyle = visible ? '#bdaa97' : '#735b42';
-          for (let i = 0; i < 8; i++) {
-            ctx.fillRect(pixelX + ((i % 4) * 4 + 1) * scaledDimensions.scale, pixelY + (Math.floor(i / 4) * 8 + 3) * scaledDimensions.scale, 2 * scaledDimensions.scale, 2 * scaledDimensions.scale);
-          }
+          spriteX = 160; // 11th tile (10 * 16)
+          spriteY = 0; // First row (0 * 16)
           break;
-          
+        case 'tree':
+          spriteX = 112; // 8th tile (7 * 16)
+          spriteY = 16; // Second row (1 * 16)
+          break;
+        case 'bush':
+          spriteX = 80; // 6th tile (5 * 16)
+          spriteY = 0; // First row (0 * 16)
+          break;
         case 'stairsDown':
-          ctx.fillStyle = visible ? '#bdaa97' : '#604b3d';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Stairs going down (>) (scaled)
-          ctx.fillStyle = visible ? '#ede4da' : '#bfb8b4';
-          for (let i = 0; i < 8; i++) {
-            ctx.fillRect(pixelX + (4 + i) * scaledDimensions.scale, pixelY + (4 + i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
-            ctx.fillRect(pixelX + (4 + i) * scaledDimensions.scale, pixelY + (12 - i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
-          }
+          spriteX = 80; // 6th tile (5 * 16)
+          spriteY = 448; // Row 29 (28 * 16)
           break;
-          
+        case 'floor':
+          // Use a generic floor tile - using soil for now
+          spriteX = 160; // 11th tile
+          spriteY = 0; // First row
+          break;
+        case 'wall':
+          // Use second tile as wall for now
+          spriteX = 16; // 2nd tile (1 * 16)
+          spriteY = 0; // First row (0 * 16)
+          break;
         case 'stairsUp':
-          ctx.fillStyle = visible ? '#bdaa97' : '#604b3d';
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
-          // Stairs going up (<) (scaled)
-          ctx.fillStyle = visible ? '#ede4da' : '#bfb8b4';
-          for (let i = 0; i < 8; i++) {
-            ctx.fillRect(pixelX + (12 - i) * scaledDimensions.scale, pixelY + (4 + i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
-            ctx.fillRect(pixelX + (12 - i) * scaledDimensions.scale, pixelY + (12 - i) * scaledDimensions.scale, scaledDimensions.scale, scaledDimensions.scale);
-          }
+          // Use same as stairs down for now
+          spriteX = 80; // 6th tile
+          spriteY = 448; // Row 29
           break;
-          
         default:
-          ctx.fillStyle = '#a94949'; // Red from palette for unknown tiles
-          ctx.fillRect(pixelX, pixelY, tileSize, tileSize);
+          // Default to first tile
+          spriteX = 0;
+          spriteY = 0;
       }
+      
+      // Apply dimming for explored but not visible tiles
+      if (!visible && explored) {
+        ctx.globalAlpha = 0.5;
+      } else {
+        ctx.globalAlpha = 1.0;
+      }
+      
+      // Ensure pixel-perfect rendering for sprites (disable all smoothing)
+      ctx.imageSmoothingEnabled = false;
+      (ctx as any).webkitImageSmoothingEnabled = false;
+      (ctx as any).mozImageSmoothingEnabled = false;
+      (ctx as any).msImageSmoothingEnabled = false;
+      
+      // Draw the sprite from tileset, scaling from 16x16 to current tile size
+      ctx.drawImage(
+        tileset,
+        spriteX, spriteY, 16, 16, // Source: 16x16 from original tileset
+        pixelX, pixelY, tileSize, tileSize // Destination: scaled tile size
+      );
+      
+      // Reset alpha
+      ctx.globalAlpha = 1.0;
     };
 
     const drawMap = () => {
